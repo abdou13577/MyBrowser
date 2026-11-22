@@ -31,25 +31,39 @@ function toIco(pngs) {
 }
 
 module.exports = (ctx) => {
-  let icon = null;
-  const apply = (w) => { try { if (icon && w.win && !w.win.isDestroyed()) w.win.setIcon(icon); } catch (e) {} };
+  try { require('./pipfix')(ctx); } catch (e) { ctx.logLine('pipfix failed', e); }
+  let icon = null, icoReady = '';
+  const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
+  const apply = (w) => {
+    try {
+      if (!w.win || w.win.isDestroyed()) return;
+      if (icon) w.win.setIcon(icon);
+      // التثبيت على شريط المهام يأخذ الأيقونة من هنا (وإلا يأخذ أيقونة ملف البرنامج القديمة)
+      if (icoReady && typeof w.win.setAppDetails === 'function') {
+        w.win.setAppDetails({ appId: 'com.personal.mybrowser', appIconPath: icoReady, appIconIndex: 0,
+          relaunchCommand: `"${process.execPath}"`, relaunchDisplayName: 'MyBrowser' });
+      }
+    } catch (e) {}
+  };
   ctx.hooks.windowReady.push(apply);
   app.whenReady().then(async () => {
     try {
       const svg = fs.readFileSync(SVG_FILE, 'utf8');
       const big = await render(svg, 256);
       icon = big;
+      if (process.platform === 'win32' && app.isPackaged) {
+        const stamp = require('crypto').createHash('sha256').update(svg).digest('hex').slice(0, 16);
+        if (ctx.settings.iconStamp !== stamp || !fs.existsSync(icoPath)) {
+          const pngs = [256, 64, 48, 32, 24, 16].map(s => ({ size: s, png: (s === 256 ? big : big.resize({ width: s, height: s, quality: 'best' })).toPNG() }));
+          fs.writeFileSync(icoPath, toIco(pngs));
+          // تحديث ذاكرة الأيقونات حتى يظهر الشكل الجديد على سطح المكتب بدون إعادة تشغيل الجهاز
+          try { cp.spawn('ie4uinit.exe', ['-show'], { detached: true, stdio: 'ignore', windowsHide: true }).unref(); } catch (e) {}
+          ctx.settings.iconStamp = stamp; ctx.saveSettings();
+          ctx.logLine('ICON updated', stamp);
+        }
+        icoReady = icoPath;
+      }
       for (const w of ctx.windows) apply(w);
-      if (process.platform !== 'win32' || !app.isPackaged) return;
-      const stamp = require('crypto').createHash('sha256').update(svg).digest('hex').slice(0, 16);
-      const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
-      if (ctx.settings.iconStamp === stamp && fs.existsSync(icoPath)) return;
-      const pngs = [256, 64, 48, 32, 24, 16].map(s => ({ size: s, png: (s === 256 ? big : big.resize({ width: s, height: s, quality: 'best' })).toPNG() }));
-      fs.writeFileSync(icoPath, toIco(pngs));
-      // تحديث ذاكرة الأيقونات حتى يظهر الشكل الجديد على سطح المكتب بدون إعادة تشغيل الجهاز
-      try { cp.spawn('ie4uinit.exe', ['-show'], { detached: true, stdio: 'ignore', windowsHide: true }).unref(); } catch (e) {}
-      ctx.settings.iconStamp = stamp; ctx.saveSettings();
-      ctx.logLine('ICON updated', stamp);
     } catch (e) { ctx.logLine('ICON failed', e); }
   });
 };
