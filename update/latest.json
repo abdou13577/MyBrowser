@@ -1,16 +1,16 @@
 {
-  "version": "2.6.3",
-  "date": "2026-11-22T21:20:25.419Z",
+  "version": "2.6.4",
+  "date": "2026-11-22T21:36:38.309Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.2",
   "notes": {
-    "ar": "\u0623\u064a\u0642\u0648\u0646\u0629 \u0627\u0644\u0630\u0631\u0651\u0629 \u0628\u0627\u0644\u0623\u0644\u0648\u0627\u0646 \u0627\u0644\u062c\u062f\u064a\u062f\u0629",
-    "en": "Atom icon in the new colours"
+    "ar": "\u0623\u064a\u0642\u0648\u0646\u0629 \u0635\u062d\u064a\u062d\u0629 \u0639\u0646\u062f \u0627\u0644\u062a\u062b\u0628\u064a\u062a \u0641\u064a \u0634\u0631\u064a\u0637 \u0627\u0644\u0645\u0647\u0627\u0645\u060c \u0648\u0632\u0631 \u0627\u0644\u0631\u062c\u0648\u0639 \u0645\u0646 \u0627\u0644\u0641\u064a\u062f\u064a\u0648 \u0627\u0644\u0639\u0627\u0626\u0645 \u064a\u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d \u0645\u0628\u0627\u0634\u0631\u0629",
+    "en": "Correct pinned taskbar icon; the floating video's back button restores the browser"
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "4c1ffbef4f2c7c1036d187849c3324b52380704b0b859edbc89c6d7f166cfcae",
+      "sha256": "24ad17686300a287254baa60aa381e5de439fd23f4b6d7ce3740d0a4b45bf6ee",
       "size": 1334
     },
     {
@@ -20,13 +20,18 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "5d1d3788f23f584963a86cb8e3edb483b7f6078871338f0c222fdbc0a609464d",
-      "size": 3332
+      "sha256": "dfbdf9f5d57b88edca16df4276e6f732c45a5dcf87aa5eb085ba3beef3b6574b",
+      "size": 3950
     },
     {
       "path": "src/features/notes.js",
       "sha256": "4a03a020c6800d7a2ae33106a43c47c7d5a7b1ccef23d8ee1636024f1448aed2",
       "size": 4017
+    },
+    {
+      "path": "src/features/pipfix.js",
+      "sha256": "c735e5bcb43b9fb40cdf8a7569c769c45a2d31876ead2396c627ee5b7aeb84ab",
+      "size": 1268
     }
   ]
 }
