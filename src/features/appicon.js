@@ -1,0 +1,57 @@
+// أيقونة المتصفح: تُرسم من ملف SVG (نص) داخل البرنامج، فيمكن تغييرها بتحديث تلقائي عادي
+// - أيقونة النوافذ وشريط المهام: تُضبط عند كل تشغيل
+// - أيقونة الاختصارات (سطح المكتب وقائمة ابدأ): نكتب icon.ico بجانب البرنامج ونحدّث ذاكرة الأيقونات في ويندوز
+const { app, BrowserWindow, nativeImage } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const cp = require('child_process');
+
+const SVG_FILE = path.join(__dirname, '..', 'assets', 'icon.svg');
+
+async function render(svg, size) {
+  const w = new BrowserWindow({ width: size, height: size, show: false, transparent: true, frame: false, webPreferences: { offscreen: true } });
+  try {
+    await w.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(`<html><body style="margin:0;background:transparent;overflow:hidden">${svg.replace('<svg ', `<svg width="${size}" height="${size}" `)}</body></html>`));
+    await new Promise(r => setTimeout(r, 300));
+    return (await w.capturePage()).resize({ width: size, height: size, quality: 'best' });
+  } finally { w.destroy(); }
+}
+// ملف ICO يحتوي صور PNG بعدة مقاسات
+function toIco(pngs) {
+  const head = Buffer.alloc(6); head.writeUInt16LE(0, 0); head.writeUInt16LE(1, 2); head.writeUInt16LE(pngs.length, 4);
+  let offset = 6 + 16 * pngs.length;
+  const dir = [], data = [];
+  for (const { size, png } of pngs) {
+    const e = Buffer.alloc(16);
+    e.writeUInt8(size >= 256 ? 0 : size, 0); e.writeUInt8(size >= 256 ? 0 : size, 1);
+    e.writeUInt16LE(1, 4); e.writeUInt16LE(32, 6); e.writeUInt32LE(png.length, 8); e.writeUInt32LE(offset, 12);
+    offset += png.length; dir.push(e); data.push(png);
+  }
+  return Buffer.concat([head, ...dir, ...data]);
+}
+
+module.exports = (ctx) => {
+  let icon = null;
+  const apply = (w) => { try { if (icon && w.win && !w.win.isDestroyed()) w.win.setIcon(icon); } catch (e) {} };
+  ctx.hooks.windowReady.push(apply);
+  app.whenReady().then(async () => {
+    try {
+      const svg = fs.readFileSync(SVG_FILE, 'utf8');
+      const big = await render(svg, 256);
+      icon = big;
+      for (const w of ctx.windows) apply(w);
+      if (process.platform !== 'win32' || !app.isPackaged) return;
+      const stamp = require('crypto').createHash('sha256').update(svg).digest('hex').slice(0, 16);
+      const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
+      if (ctx.settings.iconStamp === stamp && fs.existsSync(icoPath)) return;
+      const pngs = [256, 64, 48, 32, 24, 16].map(s => ({ size: s, png: (s === 256 ? big : big.resize({ width: s, height: s, quality: 'best' })).toPNG() }));
+      fs.writeFileSync(icoPath, toIco(pngs));
+      // تحديث ذاكرة الأيقونات حتى يظهر الشكل الجديد على سطح المكتب بدون إعادة تشغيل الجهاز
+      try { cp.spawn('ie4uinit.exe', ['-show'], { detached: true, stdio: 'ignore', windowsHide: true }).unref(); } catch (e) {}
+      ctx.settings.iconStamp = stamp; ctx.saveSettings();
+      ctx.logLine('ICON updated', stamp);
+    } catch (e) { ctx.logLine('ICON failed', e); }
+  });
+};
+module.exports.render = render;
+module.exports.toIco = toIco;
