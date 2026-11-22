@@ -1,0 +1,56 @@
+{
+  "name": "my-browser",
+  "version": "2.6.3",
+  "description": "متصفح شخصي بدون إعلانات مع مساعد ذكي",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win nsis",
+    "build-mac": "electron-builder --mac dmg"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@ghostery/adblocker-electron": "^2.20.3",
+    "cross-fetch": "^4.1.0",
+    "tldts-experimental": "^7.5.5"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "pe-library": "^2.0.3",
+    "resedit": "^2.0.3"
+  },
+  "productName": "MyBrowser",
+  "build": {
+    "appId": "com.personal.mybrowser",
+    "productName": "MyBrowser",
+    "asar": false,
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "MyBrowser",
+      "artifactName": "MyBrowser-Setup-${version}.${ext}"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
+    }
+  },
+  "private": true
+}
