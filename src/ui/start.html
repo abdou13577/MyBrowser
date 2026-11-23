@@ -90,6 +90,8 @@
   .appsbtn svg { width: 18px; height: 18px; fill: none; stroke: #C9C2FF; stroke-width: 1.8; }
   .appsbtn:hover { border-color: rgba(46,230,214,.6); }
   .appsbtn:focus-visible { outline: 2px solid var(--azure); outline-offset: 3px; }
+  .btnrow { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
+  .btnrow .appsbtn { margin-top: 0; }
   .note { margin-top: 46px; color: #6E7396; font-size: 12.5px; text-align: center; max-width: 90vw; }
 </style>
 </head>
@@ -100,7 +102,10 @@
     <input class="search" name="q" id="q" autofocus autocomplete="off">
     <button class="go" type="submit" aria-label="Search"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </form>
+  <div class="btnrow">
   <a class="appsbtn" id="appsBtn" href="https://apps.mybrowser.invalid/"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></svg><span id="appsLbl">Apps</span></a>
+  <a class="appsbtn" id="adBtn" href="https://adstudio.mybrowser.invalid/"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="10,8 17,12 10,16" fill="#C9C2FF" stroke="none"/><rect x="3" y="4" width="18" height="16" rx="3"/></svg><span id="adLbl">Ad Studio</span></a>
+  </div>
   <div class="tiles" id="tiles"></div>
   <div class="note" data-i18n="startNote"></div>
 
