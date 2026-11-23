@@ -8,6 +8,7 @@ document.getElementById('q').placeholder = L.searchGoogle;
 document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L[el.dataset.i18n] || el.textContent; });
 
 document.getElementById('appsLbl').textContent = ({ ar: 'التطبيقات', en: 'Apps', de: 'Apps', it: 'App', fr: 'Applications', es: 'Apps', tr: 'Uygulamalar' })[code] || 'Apps';
+document.getElementById('adLbl').textContent = ({ ar: 'استوديو الإعلانات', en: 'Ad Studio', de: 'Werbe-Studio', it: 'Studio Ad', fr: 'Studio Pub', es: 'Estudio de anuncios', tr: 'Reklam Stüdyosu' })[code] || 'Ad Studio';
 
 const tick = () => {
   const d = new Date();
