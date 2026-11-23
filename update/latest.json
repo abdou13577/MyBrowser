@@ -1,18 +1,43 @@
 {
-  "version": "2.6.8",
-  "date": "2026-11-23T14:43:17.167Z",
+  "version": "2.6.9",
+  "date": "2026-11-23T15:39:19.048Z",
   "minElectron": "45.4.1",
-  "minBase": "2.6.7",
-  "ref": "add3789433b01f2d4cfbe320ce9ae631cd87586a",
+  "minBase": "2.6.2",
+  "ref": "1c4455e99a964be7c85eec23fd1c81b3cdc4a22c",
   "notes": {
-    "ar": "\u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631 \u0648\u0623\u0648\u0636\u062d",
-    "en": "Bigger, bolder app icon"
+    "ar": "\u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 \u0639\u0646\u062f \u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d + \u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631",
+    "en": "Account chooser at startup + bigger icon"
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "ace7ac52dddb4b7a6e5756e60bc8225b7e5bc4c4fb86c8f489afe33e145b249d",
+      "sha256": "a9e86129b64d7c16e50d73abb1f19db4cc6c6933124a452863dddc8c7ebc2f8c",
       "size": 1334
+    },
+    {
+      "path": "src/chooser-preload.js",
+      "sha256": "c1b06c5001759eda848ebd971cb17af6949a07e42d4ae3467ea34e80d99a60da",
+      "size": 312
+    },
+    {
+      "path": "src/features/appicon.js",
+      "sha256": "f5ff4678fd89d272e7507e24e02355f4086341c6de1f1ba24b3a154286f955a4",
+      "size": 4114
+    },
+    {
+      "path": "src/features/chooser.js",
+      "sha256": "63b5e67ae8bfa2428466ee85875e76c3bc23457101d6d3ede18e3010d5162d9e",
+      "size": 4086
+    },
+    {
+      "path": "src/ui/chooser.html",
+      "sha256": "0e44fe74c6bbcdf18ba111471433adb5340e030f55be4249017615af6d103302",
+      "size": 4173
+    },
+    {
+      "path": "src/ui/chooser.js",
+      "sha256": "3de96ac1cc555265872888a777cff0ae2288994994633e88a815650667411dd4",
+      "size": 3821
     },
     {
       "path": "src/assets/icon.svg",
