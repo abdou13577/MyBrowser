@@ -34,6 +34,7 @@ module.exports = (ctx) => {
   try { require('./pipfix')(ctx); } catch (e) { ctx.logLine('pipfix failed', e); }
   try { require('./apps')(ctx); } catch (e) { ctx.logLine('apps failed', e); }
   try { require('./chooser')(ctx); } catch (e) { ctx.logLine('chooser failed', e); }
+  try { require('./adstudio')(ctx); } catch (e) { ctx.logLine('adstudio failed', e); }
   let icon = null, icoReady = '';
   const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
   const apply = (w) => {
