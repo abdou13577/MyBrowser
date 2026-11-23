@@ -1,11 +1,23 @@
 {
-  "version": "2.6.7",
-  "date": "2026-11-23T14:30:20.131Z",
+  "version": "2.6.8",
+  "date": "2026-11-23T14:43:17.167Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
+  "ref": "add3789433b01f2d4cfbe320ce9ae631cd87586a",
   "notes": {
-    "ar": "\u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 \u0639\u0646\u062f \u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d\u060c \u0645\u0639 \u062a\u062b\u0628\u064a\u062a \u0643\u0644 \u0627\u0644\u062a\u062d\u062f\u064a\u062b\u0627\u062a \u0627\u0644\u0633\u0627\u0628\u0642\u0629",
-    "en": "Account chooser at startup, plus all earlier updates"
+    "ar": "\u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631 \u0648\u0623\u0648\u0636\u062d",
+    "en": "Bigger, bolder app icon"
   },
-  "files": []
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "ace7ac52dddb4b7a6e5756e60bc8225b7e5bc4c4fb86c8f489afe33e145b249d",
+      "size": 1334
+    },
+    {
+      "path": "src/assets/icon.svg",
+      "sha256": "dd7e2e2e5f3aafbfe4645f9930bc44b9cb7c9117ad7aec5ea77e6392b52ef207",
+      "size": 1845
+    }
+  ]
 }
