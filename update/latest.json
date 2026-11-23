@@ -1,73 +1,11 @@
 {
-  "version": "2.6.6",
-  "date": "2026-11-22T22:17:07.615Z",
+  "version": "2.6.7",
+  "date": "2026-11-23T14:30:20.131Z",
   "minElectron": "45.4.1",
-  "minBase": "2.6.2",
-  "ref": "fda91fa3960f9196faf7f799c16830d794672370",
+  "minBase": "2.6.7",
   "notes": {
-    "ar": "\u0628\u062d\u062b \u0623\u0633\u0631\u0639 \u0639\u0646 \u0627\u0644\u062a\u062d\u062f\u064a\u062b\u0627\u062a (\u0643\u0644 30 \u062f\u0642\u064a\u0642\u0629 \u0648\u0639\u0646\u062f \u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d)",
-    "en": "Faster update checks (every 30 minutes and when you return to the browser)"
+    "ar": "\u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 \u0639\u0646\u062f \u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d\u060c \u0645\u0639 \u062a\u062b\u0628\u064a\u062a \u0643\u0644 \u0627\u0644\u062a\u062d\u062f\u064a\u062b\u0627\u062a \u0627\u0644\u0633\u0627\u0628\u0642\u0629",
+    "en": "Account chooser at startup, plus all earlier updates"
   },
-  "files": [
-    {
-      "path": "package.json",
-      "sha256": "7222d1813bc1c18a013834806f19655ba0330b12074be5214af5f391c0969ac4",
-      "size": 1334
-    },
-    {
-      "path": "src/apps/store-preload.js",
-      "sha256": "4f0e211cf4a19bcbbf3aba6fb97718cbbf89e7ab1f2e2d90190a7328a144d7e5",
-      "size": 388
-    },
-    {
-      "path": "src/apps/store.html",
-      "sha256": "bc1415766215bd7e7b92bd13b2e326e1fc1ce8db72a3746efffdc65a6dbaa68b",
-      "size": 6737
-    },
-    {
-      "path": "src/apps/store.js",
-      "sha256": "01db582bfe8f6167a994aa921f164368ed18d2565cab86a88b76ca4649bc6328",
-      "size": 9077
-    },
-    {
-      "path": "src/assets/icon.svg",
-      "sha256": "b32fdf8bee604ca67ecbe3bea5b49b4e434f4a0bd9d8cefd82f21910219a8e39",
-      "size": 1846
-    },
-    {
-      "path": "src/features/appicon.js",
-      "sha256": "b26b077c643962b9e285d43312c9a3d7ab1daf2c34d38a301cd9532c57a9c911",
-      "size": 4029
-    },
-    {
-      "path": "src/features/apps.js",
-      "sha256": "2a2ae595b0b15675ea860895ebc0e071c17c8f8c83ddf21222fe9a4e00503554",
-      "size": 13134
-    },
-    {
-      "path": "src/features/notes.js",
-      "sha256": "4a03a020c6800d7a2ae33106a43c47c7d5a7b1ccef23d8ee1636024f1448aed2",
-      "size": 4017
-    },
-    {
-      "path": "src/features/pipfix.js",
-      "sha256": "c735e5bcb43b9fb40cdf8a7569c769c45a2d31876ead2396c627ee5b7aeb84ab",
-      "size": 1268
-    },
-    {
-      "path": "src/features/updater.js",
-      "sha256": "367a32edb1cc64b6bfb71af4af0074ee14e04679fdee6ad31df761fce6656baa",
-      "size": 8094
-    },
-    {
-      "path": "src/ui/start.html",
-      "sha256": "26113d60e11d249a1289911c8e9183c13a900252aa940c27bd32ec61e3238e1d",
-      "size": 8326
-    },
-    {
-      "path": "src/ui/start.js",
-      "sha256": "9eec568384f99a54aa99ab732dc0609e380e032b5a9fa7a58248867e888eb6ec",
-      "size": 4623
-    }
-  ]
+  "files": []
 }
