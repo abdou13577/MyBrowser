@@ -1,17 +1,17 @@
 {
-  "version": "2.6.9",
-  "date": "2026-11-23T15:39:19.048Z",
+  "version": "2.7.0",
+  "date": "2026-11-23T22:36:33.581Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.2",
-  "ref": "1c4455e99a964be7c85eec23fd1c81b3cdc4a22c",
+  "ref": "022415ce53fbda0d6497b0cf9e04068c7f0dbd1d",
   "notes": {
-    "ar": "\u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 \u0639\u0646\u062f \u0641\u062a\u062d \u0627\u0644\u0645\u062a\u0635\u0641\u062d + \u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631",
-    "en": "Account chooser at startup + bigger icon"
+    "ar": "\u0627\u0633\u062a\u0648\u062f\u064a\u0648 \u0627\u0644\u0625\u0639\u0644\u0627\u0646\u0627\u062a: \u0641\u064a\u062f\u064a\u0648 \u0648\u0635\u0648\u0631 \u0625\u0639\u0644\u0627\u0646\u064a\u0629 \u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629 \u0645\u0646 \u0635\u0648\u0631\u0643 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a (\u0645\u062c\u0627\u0646\u064a) + \u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 + \u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631",
+    "en": "Ad Studio: professional AI-assisted ad videos and images from your photos (free) + account chooser + bigger icon"
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "a9e86129b64d7c16e50d73abb1f19db4cc6c6933124a452863dddc8c7ebc2f8c",
+      "sha256": "8f2be154cfd3ab3fd7b9f46b564d220456fe0fba7f5f1c6189f742b79887956e",
       "size": 1334
     },
     {
@@ -21,13 +21,23 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "f5ff4678fd89d272e7507e24e02355f4086341c6de1f1ba24b3a154286f955a4",
-      "size": 4114
+      "sha256": "5e0b927e6f6bdcf3fecb888d62fdb97bf5d6561f1c320971f765c99a657b576d",
+      "size": 4201
     },
     {
       "path": "src/features/chooser.js",
       "sha256": "63b5e67ae8bfa2428466ee85875e76c3bc23457101d6d3ede18e3010d5162d9e",
       "size": 4086
+    },
+    {
+      "path": "src/features/adstudio.js",
+      "sha256": "51f93cdba5464cf9ca356a9fec54362e2efbf5b8842a2e32475d399137b0b2aa",
+      "size": 4731
+    },
+    {
+      "path": "src/adstudio-preload.js",
+      "sha256": "e557bffa6a3bf202dd46506e5ac2a59fcd86c5c3a6388f7e34d4755add508391",
+      "size": 345
     },
     {
       "path": "src/ui/chooser.html",
@@ -38,6 +48,31 @@
       "path": "src/ui/chooser.js",
       "sha256": "3de96ac1cc555265872888a777cff0ae2288994994633e88a815650667411dd4",
       "size": 3821
+    },
+    {
+      "path": "src/ui/adstudio.html",
+      "sha256": "c6ff84fbfe743f34a68142445a98c35c84d1b3586a1b57aeb779c83d32728966",
+      "size": 8264
+    },
+    {
+      "path": "src/ui/adstudio.js",
+      "sha256": "54b06c4e4a908ef45c754e396b862389861eaa6a2892ad482c36d113ca9c2932",
+      "size": 22393
+    },
+    {
+      "path": "src/ui/adstudio2.js",
+      "sha256": "ff026560da52818137e3b921260cd2ef6e7753069fe021f4a7f6e2e3b2bad62d",
+      "size": 11099
+    },
+    {
+      "path": "src/ui/start.html",
+      "sha256": "a173f87068c17e6e7981b7051e15aeaf0bf08af8fd3589db73ae7de00f7c20b0",
+      "size": 8773
+    },
+    {
+      "path": "src/ui/start.js",
+      "sha256": "864e4b94eef89b022dcecae7a7f14021a984d74059fc63ea493f3a7df3427504",
+      "size": 4861
     },
     {
       "path": "src/assets/icon.svg",
