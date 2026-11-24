@@ -26,6 +26,7 @@ module.exports = (ctx) => {
     chooserWin.on('closed', () => { chooserWin = null; if (!picked) revealHidden(); });
     profiles().forEach(p => { try { ctx.refreshIdentity(p); } catch {} });
   }
+  ctx.showAccountChooser = showChooser;
   function closeChooser() { if (chooserWin && !chooserWin.isDestroyed()) { try { chooserWin.destroy(); } catch {} } chooserWin = null; }
 
   // النوافذ التي فُتحت تلقائياً عند البدء وأخفيناها بانتظار اختيار المستخدم
