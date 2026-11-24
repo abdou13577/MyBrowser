@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#12142a; --field:#1d2140; --line:#2c3160; --ink:#eef0ff; --dim:#9aa0d0; --accent:#8B7CFF; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: "Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  .bar { height: 54px; display: flex; align-items: center; gap: 6px; padding: 0 8px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+  input { flex: 1 1 auto; min-width: 0; height: 36px; border: 1px solid var(--line); background: var(--field); color: var(--ink);
+    border-radius: 8px; padding: 0 10px; font-size: 14px; outline: none; }
+  input:focus { border-color: var(--accent); }
+  .count { color: var(--dim); font-size: 12.5px; min-width: 52px; text-align: center; white-space: nowrap; }
+  .count.none { color: #ff8a9c; }
+  button { height: 34px; min-width: 34px; border: 1px solid var(--line); background: var(--field); color: var(--ink);
+    border-radius: 8px; cursor: pointer; font-size: 15px; display: grid; place-items: center; padding: 0 6px; }
+  button:hover { border-color: var(--accent); }
+  button:active { transform: translateY(1px); }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <input id="q" autocomplete="off" spellcheck="false">
+    <span class="count" id="count"></span>
+    <button id="prev" title="">▲</button>
+    <button id="next" title="">▼</button>
+    <button id="close" title="">✕</button>
+  </div>
+<script>
+  const code = (new URLSearchParams(location.search).get('lang') || 'en').slice(0, 2);
+  const RTL = code === 'ar';
+  const T = ({
+    ar: { ph: 'ابحث في الصفحة…', none: 'لا نتائج', prev: 'السابق', next: 'التالي', close: 'إغلاق (Esc)' },
+    en: { ph: 'Find on page…', none: 'No results', prev: 'Previous', next: 'Next', close: 'Close (Esc)' },
+    de: { ph: 'Auf Seite suchen…', none: 'Keine Treffer', prev: 'Zurück', next: 'Weiter', close: 'Schließen (Esc)' },
+    fr: { ph: 'Rechercher…', none: 'Aucun résultat', prev: 'Précédent', next: 'Suivant', close: 'Fermer (Échap)' },
+    es: { ph: 'Buscar en la página…', none: 'Sin resultados', prev: 'Anterior', next: 'Siguiente', close: 'Cerrar (Esc)' },
+    it: { ph: 'Cerca nella pagina…', none: 'Nessun risultato', prev: 'Precedente', next: 'Successivo', close: 'Chiudi (Esc)' },
+    tr: { ph: 'Sayfada ara…', none: 'Sonuç yok', prev: 'Önceki', next: 'Sonraki', close: 'Kapat (Esc)' }
+  })[code] || null;
+  const L = T || ({ ph: 'Find on page…', none: 'No results', prev: 'Previous', next: 'Next', close: 'Close (Esc)' });
+  document.documentElement.dir = RTL ? 'rtl' : 'ltr';
+  const q = document.getElementById('q'), count = document.getElementById('count');
+  q.placeholder = L.ph;
+  document.getElementById('prev').title = L.prev;
+  document.getElementById('next').title = L.next;
+  document.getElementById('close').title = L.close;
+  let last = '';
+  const search = (findNext, forward) => { window.mbFind.search(q.value, forward, findNext); };
+  let deb;
+  q.addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(() => { if (q.value !== last) { last = q.value; search(false, true); } }, 120); });
+  q.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); search(true, !e.shiftKey); }
+    else if (e.key === 'Escape') { e.preventDefault(); window.mbFind.close(); }
+    else if (e.key === 'F3') { e.preventDefault(); search(true, !e.shiftKey); }
+  });
+  document.getElementById('next').onclick = () => { q.focus(); search(true, true); };
+  document.getElementById('prev').onclick = () => { q.focus(); search(true, false); };
+  document.getElementById('close').onclick = () => window.mbFind.close();
+  window.mbFind.onResult((d) => {
+    if (!q.value) { count.textContent = ''; count.classList.remove('none'); return; }
+    if (!d.total) { count.textContent = L.none; count.classList.add('none'); }
+    else { count.textContent = `${d.active}/${d.total}`; count.classList.remove('none'); }
+  });
+  window.mbFind.onFocus(() => { q.focus(); q.select(); });
+  q.focus();
+</script>
+</body>
+</html>
