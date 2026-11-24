@@ -1,17 +1,17 @@
 {
-  "version": "3.3.2",
-  "date": "2026-11-24T16:54:09.304Z",
+  "version": "3.3.3",
+  "date": "2026-11-24T17:01:25.231Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "3f3bca7691c14eba9f7455f2279d7a4ef0e489e1",
+  "ref": "7c6c6c81ebc615195c3af80d045049c4a141ff34",
   "notes": {
-    "ar": "الإصدار 3.3.2: ترقية دقة الإملاء الصوتي للعربية وجميع اللغات إلى Whisper large-v3-turbo عبر كرت الشاشة (RTX 2080 Ti) مع تحسين تنقية الصوت المسجّل لدقة عالية جداً وسرعة فائقة.",
-    "en": "Version 3.3.2: Upgraded voice dictation accuracy for Arabic & all languages to Whisper large-v3-turbo on GPU with anti-aliased 16kHz audio filtering."
+    "ar": "الإصدار 3.3.3: تفعيل تسريع كرت الشاشة RTX 2080 Ti (CUDA 12) لنموذج Whisper large-v3-turbo مع احتياط تلقائي لضمان أعلى دقة للعربية وجميع اللغات.",
+    "en": "Version 3.3.3: Enabled CUDA 12 GPU acceleration on RTX 2080 Ti for Whisper large-v3-turbo with safe CPU fallback for studio-grade Arabic & multilingual dictation."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "ad86b1562cad99889548b0f914ed69aadb0571458d701cda67e3c6474b880299",
+      "sha256": "6d0b193072e4b3024f3414fe10d6afbbeb62ed79a23c9277f7cc3f7a9a09bdd8",
       "size": 1334
     },
     {
@@ -171,8 +171,8 @@
     },
     {
       "path": "src/features/voicechat.js",
-      "sha256": "243029fcd25972e60af2867b8328ddeb567e3cc7c2552195832c06d3e91a4b9f",
-      "size": 12611
+      "sha256": "d823e2227bf3187e8c9febd37237ee2e0b51f09db4df93ae384838d8e92ea456",
+      "size": 12975
     },
     {
       "path": "src/features/workspaces.js",
