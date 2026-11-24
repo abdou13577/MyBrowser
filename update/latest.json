@@ -1,17 +1,17 @@
 {
-  "version": "3.1.0",
-  "date": "2026-11-24T15:03:41.770Z",
+  "version": "3.2.0",
+  "date": "2026-11-24T15:48:07.572Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "9b8a3d1274a67b61e9552022883936023b3edd54",
+  "ref": "b8a26e43c65d1c09653857d171b03bf8ffa3b996",
   "notes": {
-    "ar": "الإصدار 3.1.0: حارس تلقائي صامت للرام والمعالج وتنظيف الكاش مع تنويم ذكي للتبويبات الخلفية، حاجب لافتات الكوكيز المزعجة، شريط الأوامر السريع (Ctrl+K)، المحوّل الفوري للعملات والوحدات عند التحديد، الحافظة السريعة المؤقتة (Ctrl+Shift+V)، ومؤقّت الانضباط وكابح التشتّت.",
-    "en": "Version 3.1.0: Silent automatic RAM/CPU/disk cache guard with smart background tab sleeping, Cookie banner killer, Command Palette (Ctrl+K), instant currency & unit selection converter, RAM-only Clipboard Vault (Ctrl+Shift+V), and Site Time Budget Focus Guard."
+    "ar": "الإصدار 3.2.0: ربط المساعد الذكي في MyBrowser مباشرةً مع FreeLLMAPI المحلي (تشغيل تلقائي في الخلفية وتوجيه مجاني لجميع ميزات الذكاء الاصطناعي داخل المتصفح).",
+    "en": "Version 3.2.0: Direct integration of MyBrowser's AI assistant with local FreeLLMAPI (auto-launch in background and automatic routing for all built-in AI features)."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "547c4dae3f592101383cc4cf717f0a34fcd279427370f0d99b543cdecc97dc82",
+      "sha256": "d09af41a92702b7838a1aafb67c5eb89cd7682ed3cbd2b7868e7218e2ce3e8c8",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "571097a89eb0b74941a775c19c29b0ae2f920dc58fce10ab66d895a382e41d54",
-      "size": 5872
+      "sha256": "3727c58ba5d32e847602864f2a809581147a2e63c2f2f60f7b26dace262428ab",
+      "size": 5957
     },
     {
       "path": "src/features/apps.js",
@@ -108,6 +108,11 @@
       "path": "src/features/focusguard.js",
       "sha256": "8cde4d2d23b8ee1e8b46722957e5e86c8eeb96e17de6eb49f4cc4cbf9ae8bd07",
       "size": 7209
+    },
+    {
+      "path": "src/features/freellm.js",
+      "sha256": "f7ca010a5323e2ee876e8098b86b861dc83b87ab45c52059e3cae80c7d477ffd",
+      "size": 9448
     },
     {
       "path": "src/features/history.js",
