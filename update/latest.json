@@ -1,38 +1,18 @@
 {
-  "version": "2.7.0",
-  "date": "2026-11-23T22:36:33.581Z",
+  "version": "2.8.0",
+  "date": "2026-11-24T11:44:57.993Z",
   "minElectron": "45.4.1",
-  "minBase": "2.6.2",
-  "ref": "022415ce53fbda0d6497b0cf9e04068c7f0dbd1d",
+  "minBase": "2.6.7",
+  "ref": "e413337eb93a2733899d3f3b50813b2d8eafce1f",
   "notes": {
-    "ar": "\u0627\u0633\u062a\u0648\u062f\u064a\u0648 \u0627\u0644\u0625\u0639\u0644\u0627\u0646\u0627\u062a: \u0641\u064a\u062f\u064a\u0648 \u0648\u0635\u0648\u0631 \u0625\u0639\u0644\u0627\u0646\u064a\u0629 \u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629 \u0645\u0646 \u0635\u0648\u0631\u0643 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a (\u0645\u062c\u0627\u0646\u064a) + \u0634\u0627\u0634\u0629 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u062d\u0633\u0627\u0628 + \u0623\u064a\u0642\u0648\u0646\u0629 \u0623\u0643\u0628\u0631",
-    "en": "Ad Studio: professional AI-assisted ad videos and images from your photos (free) + account chooser + bigger icon"
+    "ar": "\u0627\u0644\u0625\u0635\u062f\u0627\u0631 2.8.0: \u0628\u062d\u062b \u0641\u064a \u0627\u0644\u0635\u0641\u062d\u0629 (Ctrl+F)\u060c \u0625\u0639\u0627\u062f\u0629 \u0641\u062a\u062d \u0627\u0644\u062a\u0628\u0648\u064a\u0628 \u0627\u0644\u0645\u063a\u0644\u0642 (Ctrl+Shift+T)\u060c \u0627\u0644\u0633\u062c\u0644 (Ctrl+H)\u060c \u0627\u0644\u062a\u0646\u0632\u064a\u0644\u0627\u062a (Ctrl+Shift+J)\u060c \u0646\u0633\u062e \u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0648\u0627\u0633\u062a\u0639\u0627\u062f\u0629\u060c \u062a\u0631\u062c\u0645\u0629 \u0627\u0644\u0635\u0641\u062d\u0629 (Ctrl+Shift+Y)\u060c \u0648\u0625\u0635\u0644\u0627\u062d \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0641\u064a\u0633\u0628\u0648\u0643.",
+    "en": "Version 2.8.0: Find in page (Ctrl+F), reopen closed tab (Ctrl+Shift+T), History (Ctrl+H), Downloads (Ctrl+Shift+J), Backup & Restore, Page translation (Ctrl+Shift+Y), and a fix for Facebook sign-in popups."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "8f2be154cfd3ab3fd7b9f46b564d220456fe0fba7f5f1c6189f742b79887956e",
+      "sha256": "874e736a1fb2393a96a97de2fa55deeaec6fcb36ff02e0412d7252c287bb8bf0",
       "size": 1334
-    },
-    {
-      "path": "src/chooser-preload.js",
-      "sha256": "c1b06c5001759eda848ebd971cb17af6949a07e42d4ae3467ea34e80d99a60da",
-      "size": 312
-    },
-    {
-      "path": "src/features/appicon.js",
-      "sha256": "5e0b927e6f6bdcf3fecb888d62fdb97bf5d6561f1c320971f765c99a657b576d",
-      "size": 4201
-    },
-    {
-      "path": "src/features/chooser.js",
-      "sha256": "63b5e67ae8bfa2428466ee85875e76c3bc23457101d6d3ede18e3010d5162d9e",
-      "size": 4086
-    },
-    {
-      "path": "src/features/adstudio.js",
-      "sha256": "51f93cdba5464cf9ca356a9fec54362e2efbf5b8842a2e32475d399137b0b2aa",
-      "size": 4731
     },
     {
       "path": "src/adstudio-preload.js",
@@ -40,14 +20,64 @@
       "size": 345
     },
     {
-      "path": "src/ui/chooser.html",
-      "sha256": "0e44fe74c6bbcdf18ba111471433adb5340e030f55be4249017615af6d103302",
-      "size": 4173
+      "path": "src/assets/icon.svg",
+      "sha256": "dd7e2e2e5f3aafbfe4645f9930bc44b9cb7c9117ad7aec5ea77e6392b52ef207",
+      "size": 1845
     },
     {
-      "path": "src/ui/chooser.js",
-      "sha256": "3de96ac1cc555265872888a777cff0ae2288994994633e88a815650667411dd4",
-      "size": 3821
+      "path": "src/features/adstudio.js",
+      "sha256": "51f93cdba5464cf9ca356a9fec54362e2efbf5b8842a2e32475d399137b0b2aa",
+      "size": 4731
+    },
+    {
+      "path": "src/features/appicon.js",
+      "sha256": "f552359d5d6c1f7abe5fb898c291fcf21609cc30cb718ab03bc66e4b2bd29bc1",
+      "size": 4794
+    },
+    {
+      "path": "src/features/backup.js",
+      "sha256": "676801265098c55a6fd6d594074823d6646a0f2a6ade0289b0cffe0db9d37b03",
+      "size": 4993
+    },
+    {
+      "path": "src/features/chooser.js",
+      "sha256": "63b5e67ae8bfa2428466ee85875e76c3bc23457101d6d3ede18e3010d5162d9e",
+      "size": 4086
+    },
+    {
+      "path": "src/features/downloads.js",
+      "sha256": "4e651e4428b8fa2b881f03a1033492cf37f177a969ad31f1a74691ec12999208",
+      "size": 6252
+    },
+    {
+      "path": "src/features/fblogin.js",
+      "sha256": "490a273b9e356450d09c80f8f198fe1b2d9aee1f01f2e3bde3502a88b35fa10c",
+      "size": 2420
+    },
+    {
+      "path": "src/features/find.js",
+      "sha256": "399bee6292993c70cdd927c3fd29f814658b704771a0b7c9a331eacec3f3a6a2",
+      "size": 5171
+    },
+    {
+      "path": "src/features/history.js",
+      "sha256": "7f34a7aa1ab98f7f25f7004aafc1c634e00ee9e5321060082619a7f9a847454e",
+      "size": 5685
+    },
+    {
+      "path": "src/features/recent.js",
+      "sha256": "034c2d62cb6431120f50493804cea3b99800514eeb9b77281ff7e0bd1c3703b4",
+      "size": 3164
+    },
+    {
+      "path": "src/features/translate.js",
+      "sha256": "00748e3b7b6af6e22a80a77bb8e441c48781415b5f6953a0ef9de4e720779c62",
+      "size": 5146
+    },
+    {
+      "path": "src/panels-preload.js",
+      "sha256": "a62a5384562371c74f8d971c512a88d91276736d223701e6d6fa8e8543c71502",
+      "size": 1444
     },
     {
       "path": "src/ui/adstudio.html",
@@ -65,19 +95,34 @@
       "size": 11099
     },
     {
+      "path": "src/ui/backup.html",
+      "sha256": "1062f66e5d57d5d98bf182e987e79b83972b5f2a95a4781cf96540c640b2a4fc",
+      "size": 6971
+    },
+    {
+      "path": "src/ui/downloads.html",
+      "sha256": "fd583c59ec0b4256b812eb33b0428613def2ed007164d9bd19a2e28b456a41ce",
+      "size": 7547
+    },
+    {
+      "path": "src/ui/find.html",
+      "sha256": "5d0a4f3f2f7d39562bc0144c5a279c30b6a18498a3cd7c532f91b03e39dcb39f",
+      "size": 4229
+    },
+    {
+      "path": "src/ui/history.html",
+      "sha256": "095c7fd511b1d49f7f662401c13e9589280d8ad5ad2761e76922f3f13a5da3bc",
+      "size": 7090
+    },
+    {
       "path": "src/ui/start.html",
-      "sha256": "a173f87068c17e6e7981b7051e15aeaf0bf08af8fd3589db73ae7de00f7c20b0",
-      "size": 8773
+      "sha256": "81d61a1811e4945e6aed311163de352b8b8c1581043d4c691e85c0116caf7bcb",
+      "size": 9480
     },
     {
       "path": "src/ui/start.js",
-      "sha256": "864e4b94eef89b022dcecae7a7f14021a984d74059fc63ea493f3a7df3427504",
-      "size": 4861
-    },
-    {
-      "path": "src/assets/icon.svg",
-      "sha256": "dd7e2e2e5f3aafbfe4645f9930bc44b9cb7c9117ad7aec5ea77e6392b52ef207",
-      "size": 1845
+      "sha256": "472a81200fda06f8d599b1a1c926802f120ecaebf7c8a834fcc5aee1775bb7cd",
+      "size": 5472
     }
   ]
 }
