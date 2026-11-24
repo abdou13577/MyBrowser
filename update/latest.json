@@ -1,17 +1,17 @@
 {
-  "version": "2.9.0",
-  "date": "2026-11-24T14:12:08.880Z",
+  "version": "3.0.0",
+  "date": "2026-11-24T14:27:46.150Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "631fa0217e95210e18283f5da085ae01a1addc0b",
+  "ref": "a6eb37a16a7031e3a690cfb6d87291aab8b828d4",
   "notes": {
-    "ar": "الإصدار 2.9.0: لون نافذة مميّز لكل حساب، زر سريع للتبديل بين الحسابات في أي وقت، صفحات بدء مخصصة لكل حساب، إصلاح خطأ «Script failed to execute» في السجل، وإزالة Ad Studio.",
-    "en": "Version 2.9.0: Per-account window color, quick account switcher button at any time, custom startup pages per account, fix for recurring \"Script failed to execute\" log error, and Ad Studio removed."
+    "ar": "الإصدار 3.0.0: مراقب الأسعار التلقائي في الخلفية، الذاكرة بدون إنترنت مع البحث النصي، مساحات العمل بنقرة واحدة، منظّف الروابط والتتبع الذكي (Ctrl+Shift+C)، الشاشة المقسومة الحقيقية (Ctrl+Shift+S)، ووضع الخصوصية الفوري (F9 / Ctrl+Shift+B).",
+    "en": "Version 3.0.0: Background Price Drop Radar, Offline Page Snapshots with full-text search, One-Click Workspaces, Smart Clean Copy Link (Ctrl+Shift+C), true Split View (Ctrl+Shift+S), and Quick Privacy Boss Key (F9 / Ctrl+Shift+B)."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "475777e0cd1a34608ed399ff61b34dc8ad0300bcf0aa1118401057b63f3d6716",
+      "sha256": "f181d4c4e44f8f82514c8b78aa00cda894f864ed9d84d31a47156296af285bea",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "fc9f394b776e3609ae84cb3feb1ba14319e34c00fc74dc748e558c05470cfc82",
-      "size": 4790
+      "sha256": "11837fbbca736474e6c0d5d7fe303d220292271e1eacb462da64fc7b6967c34c",
+      "size": 5324
     },
     {
       "path": "src/features/apps.js",
@@ -55,9 +55,19 @@
       "size": 4993
     },
     {
+      "path": "src/features/bosskey.js",
+      "sha256": "81e0f898e39c68efbbfa71bcb03474d81c57fe54bb5942e34c1df6706911e6e0",
+      "size": 6791
+    },
+    {
       "path": "src/features/chooser.js",
       "sha256": "3987e50ce73121f3cfd6675f2f751324019bf420b089a6d521deda4668d24924",
       "size": 4126
+    },
+    {
+      "path": "src/features/cleanlink.js",
+      "sha256": "417885d8908e1ed77afbee30f58ee9935fdfa60ccdf428a0762c902841ccd0e7",
+      "size": 5644
     },
     {
       "path": "src/features/downloads.js",
@@ -66,8 +76,8 @@
     },
     {
       "path": "src/features/extras.js",
-      "sha256": "87f32230312488465ace859ce1d197675fc41b113801631a20bf3a921b77555a",
-      "size": 12851
+      "sha256": "01b904d3ee81fadde5a8efbcf46f9ff520b175e5d2b3e4caa664d56bc29d13a6",
+      "size": 15619
     },
     {
       "path": "src/features/fblogin.js",
@@ -95,9 +105,24 @@
       "size": 1268
     },
     {
+      "path": "src/features/priceradar.js",
+      "sha256": "1e1ae380bbdf8b67e09134728160529fe1f19919bab08aef13ff77ab9d504260",
+      "size": 14460
+    },
+    {
       "path": "src/features/recent.js",
       "sha256": "034c2d62cb6431120f50493804cea3b99800514eeb9b77281ff7e0bd1c3703b4",
       "size": 3164
+    },
+    {
+      "path": "src/features/snapshots.js",
+      "sha256": "9f101e60262536fea13bf0030780f776251b1bcfde986626cad8d38816106105",
+      "size": 9877
+    },
+    {
+      "path": "src/features/splitview.js",
+      "sha256": "2242773022ff6d9df78c789238ab8576b296bc1248ca18e9f1120598b497cd41",
+      "size": 11895
     },
     {
       "path": "src/features/translate.js",
@@ -110,14 +135,19 @@
       "size": 8094
     },
     {
+      "path": "src/features/workspaces.js",
+      "sha256": "eefada5e0f8eb86f76446d06039fadda10de027b1980bb5fb9c9ea62a254e823",
+      "size": 5963
+    },
+    {
       "path": "src/panels-preload.js",
-      "sha256": "a62a5384562371c74f8d971c512a88d91276736d223701e6d6fa8e8543c71502",
-      "size": 1444
+      "sha256": "09c23f4fbe2db23f3abe31bbb71e97d2cb9984f7b5dcc3017c86df13594faece",
+      "size": 2632
     },
     {
       "path": "src/preload.js",
-      "sha256": "7428e2fb849afee72c4865ec214098d12b7d4eb2d4d0f469684ee6aa21f7a246",
-      "size": 6020
+      "sha256": "7679f578aa8dbba3993314fc515a45dc5c8df98e85bc3401daa2248d975a93bc",
+      "size": 6662
     },
     {
       "path": "src/ui/backup.html",
@@ -150,14 +180,29 @@
       "size": 7090
     },
     {
+      "path": "src/ui/priceradar.html",
+      "sha256": "ec2bbc8506ddd16ddf2008b1e3713ad31a4abe586057ec2bfa1ea712eacdc3f0",
+      "size": 11107
+    },
+    {
+      "path": "src/ui/snapshots.html",
+      "sha256": "d9198d9cb3cb1847fa44e1e8d2e5322850ca77f6cf99995f59aebb98cbefe4ec",
+      "size": 10019
+    },
+    {
       "path": "src/ui/start.html",
-      "sha256": "d8b93655fcabc84a25c78371da9a395461e6ffad491292f1e7fb541e79c1f6b4",
-      "size": 9203
+      "sha256": "9ce0d3845f35c4078e7d4bafc382d0652e35291db458a975ab9b2c1cbd2ebea3",
+      "size": 9950
     },
     {
       "path": "src/ui/start.js",
-      "sha256": "5dd25c09a64eecf5953caaa0a700e94590a546bf8037b102b0a67c6a4c5a472a",
-      "size": 5234
+      "sha256": "0562bc758bb59cd47dd88e6164bd4955ef28a0ee8026e0042780eb9367cb17f4",
+      "size": 5895
+    },
+    {
+      "path": "src/ui/workspaces.html",
+      "sha256": "1a6853247fc421b963038e61bf4aba1fee85e230f4cc9a9347aab7bc288048a7",
+      "size": 11727
     }
   ]
 }
