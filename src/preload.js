@@ -135,5 +135,6 @@ contextBridge.exposeInMainWorld('mbExtras', {
   cmdRun: (it) => ipcRenderer.invoke('cmd:run', it),
   clipClose: () => ipcRenderer.invoke('clip:close'),
   clipClear: () => ipcRenderer.invoke('clip:clear'),
-  clipPick: (i) => ipcRenderer.invoke('clip:pick', i)
+  clipPick: (i) => ipcRenderer.invoke('clip:pick', i),
+  winDictate: () => ipcRenderer.invoke('voice:winDictate')
 });
