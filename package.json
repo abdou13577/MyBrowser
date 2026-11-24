@@ -1,6 +1,6 @@
 {
   "name": "my-browser",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "متصفح شخصي بدون إعلانات مع مساعد ذكي",
   "main": "src/main.js",
   "scripts": {

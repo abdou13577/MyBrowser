@@ -130,5 +130,10 @@ contextBridge.exposeInMainWorld('mbExtras', {
   snapCapture: () => ipcRenderer.invoke('snaps:capture'),
   openSnapshots: () => ipcRenderer.invoke('snaps:openPanel'),
   radarWatch: () => ipcRenderer.invoke('radar:watch'),
-  openRadar: () => ipcRenderer.invoke('radar:openPanel')
+  openRadar: () => ipcRenderer.invoke('radar:openPanel'),
+  cmdClose: () => ipcRenderer.invoke('cmd:close'),
+  cmdRun: (it) => ipcRenderer.invoke('cmd:run', it),
+  clipClose: () => ipcRenderer.invoke('clip:close'),
+  clipClear: () => ipcRenderer.invoke('clip:clear'),
+  clipPick: (i) => ipcRenderer.invoke('clip:pick', i)
 });

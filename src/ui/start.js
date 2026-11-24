@@ -14,6 +14,7 @@ document.getElementById('backupLbl').textContent = ({ ar: 'نسخة احتياط
 document.getElementById('wsLbl').textContent = ({ ar: 'مساحات العمل', en: 'Workspaces', de: 'Bereiche', it: 'Spazi', fr: 'Espaces', es: 'Espacios', tr: 'Alanlar' })[code] || 'Workspaces';
 document.getElementById('snapsLbl').textContent = ({ ar: 'الذاكرة بدون إنترنت', en: 'Offline Memory', de: 'Offline', it: 'Offline', fr: 'Hors ligne', es: 'Sin conexión', tr: 'Çevrimdışı' })[code] || 'Offline';
 document.getElementById('radarLbl').textContent = ({ ar: 'مراقب الأسعار', en: 'Price Radar', de: 'Preis-Radar', it: 'Radar prezzi', fr: 'Radar prix', es: 'Radar precios', tr: 'Fiyat Radarı' })[code] || 'Price Radar';
+document.getElementById('focusLbl').textContent = ({ ar: 'مؤقّت الانضباط', en: 'Focus Guard', de: 'Zeitlimit', it: 'Focus', fr: 'Focus', es: 'Enfoque', tr: 'Odak' })[code] || 'Focus';
 
 const tick = () => {
   const d = new Date();

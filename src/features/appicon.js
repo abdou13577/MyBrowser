@@ -48,6 +48,12 @@ module.exports = (ctx) => {
   try { require('./workspaces')(ctx); } catch (e) { ctx.logLine('workspaces failed', e); }
   try { require('./snapshots')(ctx); } catch (e) { ctx.logLine('snapshots failed', e); }
   try { require('./priceradar')(ctx); } catch (e) { ctx.logLine('priceradar failed', e); }
+  try { require('./perfguard')(ctx); } catch (e) { ctx.logLine('perfguard failed', e); }
+  try { require('./cookiekiller')(ctx); } catch (e) { ctx.logLine('cookiekiller failed', e); }
+  try { require('./smartselect')(ctx); } catch (e) { ctx.logLine('smartselect failed', e); }
+  try { require('./cmdpalette')(ctx); } catch (e) { ctx.logLine('cmdpalette failed', e); }
+  try { require('./clipvault')(ctx); } catch (e) { ctx.logLine('clipvault failed', e); }
+  try { require('./focusguard')(ctx); } catch (e) { ctx.logLine('focusguard failed', e); }
   let icon = null, icoReady = '';
   const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
   const apply = (w) => {

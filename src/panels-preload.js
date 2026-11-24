@@ -57,3 +57,9 @@ contextBridge.exposeInMainWorld('mbRadar', {
   openUrl: (u) => ipcRenderer.send('radar:openUrl', u),
   onChanged: (cb) => ipcRenderer.on('radar:changed', () => cb())
 });
+
+contextBridge.exposeInMainWorld('mbFocus', {
+  get: () => ipcRenderer.invoke('focus:get'),
+  set: (domain, minutes) => ipcRenderer.invoke('focus:set', { domain, minutes }),
+  remove: (domain) => ipcRenderer.invoke('focus:remove', domain)
+});
