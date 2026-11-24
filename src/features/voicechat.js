@@ -187,20 +187,30 @@ function injectScript(lbl) {
 }
 
 const PY_SCRIPT = `
-import sys, json
+import os, sys, glob, json, site
+for sp in site.getsitepackages():
+    for d in glob.glob(os.path.join(sp, "nvidia", "*", "bin")):
+        if os.path.isdir(d):
+            try: os.add_dll_directory(d)
+            except Exception: pass
+            os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
 from faster_whisper import WhisperModel
 wav_path = sys.argv[1]
-model = None
-try:
-    model = WhisperModel("large-v3-turbo", device="cuda", compute_type="int8_float16")
-except Exception:
+def run(name, dev, ct):
+    m = WhisperModel(name, device=dev, compute_type=ct)
+    segs, info = m.transcribe(wav_path, vad_filter=True, beam_size=5, condition_on_previous_text=False)
+    text = " ".join(s.text.strip() for s in segs if s.text).strip()
+    return {"ok": True, "text": text, "lang": info.language}
+res = None
+for cfg in [("large-v3-turbo", "cuda", "int8_float16"), ("large-v3-turbo", "cpu", "int8"), ("base", "cpu", "int8")]:
     try:
-        model = WhisperModel("large-v3-turbo", device="cpu", compute_type="int8")
+        res = run(*cfg)
+        break
     except Exception:
-        model = WhisperModel("base", device="cpu", compute_type="int8")
-segs, info = model.transcribe(wav_path, vad_filter=True, beam_size=5, condition_on_previous_text=False)
-text = " ".join(s.text.strip() for s in segs if s.text).strip()
-sys.stdout.buffer.write(json.dumps({"ok": True, "text": text, "lang": info.language}, ensure_ascii=False).encode("utf-8"))
+        continue
+if not res:
+    res = {"ok": False, "error": "whisper failed"}
+sys.stdout.buffer.write(json.dumps(res, ensure_ascii=False).encode("utf-8"))
 `;
 
 function transcribeWavFile(wavPath) {
