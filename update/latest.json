@@ -1,17 +1,17 @@
 {
-  "version": "3.3.0",
-  "date": "2026-11-24T16:19:11.795Z",
+  "version": "3.3.1",
+  "date": "2026-11-24T16:32:35.257Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "027e5a19197dab665b4a9b544bfd84c5af2ba4ce",
+  "ref": "438a06021f3f60b3f605ae0b691faec8b0269626",
   "notes": {
-    "ar": "الإصدار 3.3.0: ربط المساعد الذكي بالسحابة المجانية السريعة (رد خلال ثانية بدون مفتاح وبصفر عبء على جهازك) مع دعم FreeLLMAPI وOllama، إضافة زر الميكروفون للإملاء الصوتي بأي لغة داخل خانة المساعد، وتفعيل البحث المباشر في الويب (مثل Kleinanzeigen وmobile.de وغيرها) مع روابط قابلة للنقر تفتح مباشرة في المتصفح.",
-    "en": "Version 3.3.0: Fast keyless free cloud AI (with FreeLLMAPI & local Ollama support), microphone voice-to-text button right inside the AI chat input, and live web search (Kleinanzeigen, mobile.de, Amazon, eBay, etc.) returning direct clickable links."
+    "ar": "الإصدار 3.3.1: إصلاح كامل لزر الميكروفون في المساعد الذكي — تسجيل صوتي حقيقي مستمر (يبقى يومض بالأحمر مع عدّاد زمني حتى تضغط إيقاف) وتحويل فوري للنص بأي لغة محلياً عبر Whisper بدقة عالية.",
+    "en": "Version 3.3.1: Complete fix for AI chat microphone — real continuous microphone recording with pulsing red indicator & timer until you stop, plus accurate local multi-language Whisper transcription."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "1c7d97222be78465990bc0d2a6d68b52fe445ec284f14603829f624bf9dfaf16",
+      "sha256": "fcab574c18a2aefaa11f5b7d308847acbed838330b641b59dbe7c7d56400cba3",
       "size": 1334
     },
     {
@@ -171,8 +171,8 @@
     },
     {
       "path": "src/features/voicechat.js",
-      "sha256": "ffb6632756a996e2afe5d7754dfc7941e52df995c85d412553338ec9c6a2dd23",
-      "size": 7108
+      "sha256": "af6c457b51198bd9865d51188c26546278416f89149eaac08d9d07ef91177b66",
+      "size": 12127
     },
     {
       "path": "src/features/workspaces.js",
@@ -186,8 +186,8 @@
     },
     {
       "path": "src/preload.js",
-      "sha256": "3d0a43764edff4d49edd9b3c9415005a02dfd3b1741bb7d38459d289b934d21a",
-      "size": 6987
+      "sha256": "e133e82497249265c54f1419bb4474b6fe56e2b58a8ae0f2a950781a1eb002d2",
+      "size": 7000
     },
     {
       "path": "src/ui/backup.html",
