@@ -35,6 +35,13 @@ module.exports = (ctx) => {
   try { require('./apps')(ctx); } catch (e) { ctx.logLine('apps failed', e); }
   try { require('./chooser')(ctx); } catch (e) { ctx.logLine('chooser failed', e); }
   try { require('./adstudio')(ctx); } catch (e) { ctx.logLine('adstudio failed', e); }
+  try { require('./find')(ctx); } catch (e) { ctx.logLine('find failed', e); }
+  try { require('./recent')(ctx); } catch (e) { ctx.logLine('recent failed', e); }
+  try { require('./history')(ctx); } catch (e) { ctx.logLine('history failed', e); }
+  try { require('./downloads')(ctx); } catch (e) { ctx.logLine('downloads failed', e); }
+  try { require('./backup')(ctx); } catch (e) { ctx.logLine('backup failed', e); }
+  try { require('./translate')(ctx); } catch (e) { ctx.logLine('translate failed', e); }
+  try { require('./fblogin')(ctx); } catch (e) { ctx.logLine('fblogin failed', e); }
   let icon = null, icoReady = '';
   const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
   const apply = (w) => {
