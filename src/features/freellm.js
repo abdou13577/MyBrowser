@@ -72,77 +72,102 @@ function sanitizeLinks(text) {
     .replace(/https?:\/\/suchen\.mobile\.de\/[^\s)]+/gi, 'https://www.autoscout24.de/lst?atype=C&cy=D&sort=price&desc=0');
 }
 
-function buildDirectLinks(q) {
+function extractCarTerms(text) {
+  const s = String(text || '');
+  const terms = [];
+  const latin = s.match(/\b(vw|volkswagen|golf|polo|passat|tiguan|touran|touareg|caddy|bmw|mercedes|benz|audi|opel|corsa|astra|insignia|ford|focus|fiesta|mondeo|toyota|yaris|corolla|auris|rav4|skoda|octavia|fabia|superb|seat|ibiza|leon|renault|clio|megane|peugeot|citroen|hyundai|kia|nissan|dacia|fiat|volvo|mazda|honda|civic|porsche|mini|jeep|suzuki|c200|c220|e200|e220|e350|a180|a200|cla|glc|gle|a3|a4|a5|a6|q3|q5|q7|318d|320d|330d|520d|530d|x1|x3|x5|116i|118i|118d|gti|gtd|tdi|tsi|amg|s-line|20\d\d)\b/gi);
+  if (latin) {
+    for (const m of latin) {
+      const lw = m.toLowerCase();
+      if (!terms.includes(lw)) terms.push(lw);
+    }
+  }
+  if (/غولف|جولف/i.test(s) && !terms.includes('golf')) terms.push('golf');
+  if (/مرسيدس/i.test(s) && !terms.includes('mercedes')) terms.push('mercedes');
+  if (/بي ام|بي إم/i.test(s) && !terms.includes('bmw')) terms.push('bmw');
+  if (/أودي|اودي/i.test(s) && !terms.includes('audi')) terms.push('audi');
+  if (/تويوتا/i.test(s) && !terms.includes('toyota')) terms.push('toyota');
+  if (/فولكس|فولكسفاغن/i.test(s) && !terms.includes('vw')) terms.push('vw');
+  if (/أوبل|اوبل/i.test(s) && !terms.includes('opel')) terms.push('opel');
+  if (/فورد/i.test(s) && !terms.includes('ford')) terms.push('ford');
+  if (/سكودا/i.test(s) && !terms.includes('skoda')) terms.push('skoda');
+  if (/حادث|مصدوم|أضرار|تلف|unfall|beschädigt|damaged/i.test(s) && !terms.includes('unfallwagen')) terms.push('unfallwagen');
+  if (/أوتوماتيك|اتوماتيك|automatik/i.test(s) && !terms.includes('automatik')) terms.push('automatik');
+  if (/ديزل|diesel/i.test(s) && !terms.includes('diesel')) terms.push('diesel');
+  return terms.slice(0, 6);
+}
+
+function buildDirectLinks(q, history = []) {
   const links = [];
-  const low = q.toLowerCase();
+  const recentHist = (Array.isArray(history) ? history : []).slice(-6).map(m => String(m && m.content || '')).join('\n');
+  const combinedText = q + '\n' + recentHist;
+  const low = combinedText.toLowerCase();
   const isCar = /(سيار|حادث|مصدوم|auto|car|golf|bmw|mercedes|audi|vw|polo|passat|opel|ford|toyota|skoda|seat|unfall|gebrauchtwagen)/i.test(low);
   const isDamaged = /(حادث|مصدوم|أضرار|تلف|unfall|beschädigt|damaged)/i.test(low);
   const isCheap = /(مميز|رخيص|أرخص|اقتصادي|günstig|billig|cheap)/i.test(low);
 
-  // استخراج الماركة/الموديل إن وُجدت بأحرف لاتينية أو عربية
-  const carTerms = [];
-  const latinModels = q.match(/\b(vw|volkswagen|golf|polo|passat|tiguan|bmw|mercedes|benz|audi|opel|corsa|astra|ford|focus|fiesta|toyota|yaris|corolla|skoda|octavia|fabia|seat|ibiza|leon|renault|clio|peugeot|hyundai|kia|nissan|dacia|fiat|c3|c4|a3|a4|a6|e220|c200|320d|520d|[1-8])\b/gi);
-  if (latinModels) carTerms.push(...new Set(latinModels.map(x => x.toLowerCase())));
-  if (/غولف|جولف/i.test(q) && !carTerms.includes('golf')) carTerms.push('golf');
-  if (/مرسيدس/i.test(q) && !carTerms.includes('mercedes')) carTerms.push('mercedes');
-  if (/بي ام|بي إم/i.test(q) && !carTerms.includes('bmw')) carTerms.push('bmw');
-  if (/أودي|اودي/i.test(q) && !carTerms.includes('audi')) carTerms.push('audi');
-  if (/تويوتا/i.test(q) && !carTerms.includes('toyota')) carTerms.push('toyota');
-  if (isDamaged) carTerms.push('unfallwagen');
-  if (/أوتوماتيك|اتوماتيك|automatik/i.test(q)) carTerms.push('automatik');
-  if (/ديزل|diesel/i.test(q)) carTerms.push('diesel');
+  // نستخرج الماركة/الموديل من السؤال الحالي أولاً، وإذا كان سؤالاً تابعاً ("نفس هذه السيارة") نستخرجه من سجل المحادثة!
+  let carTerms = extractCarTerms(q);
+  if (carTerms.filter(t => t !== 'unfallwagen' && t !== 'diesel' && t !== 'automatik').length === 0 && recentHist) {
+    const fromHist = extractCarTerms(recentHist);
+    for (const t of fromHist) if (!carTerms.includes(t)) carTerms.push(t);
+    carTerms = carTerms.slice(0, 6);
+  }
 
   const cleaned = q
-    .replace(/(أريدك أن تقوم بالبحث عن|ابحث لي عن|ابحث لي|ابحث عن|ابحث|في موقع|في|على موقع|على|عن سيارة|تكون لديها|تكون لديه|لديها|لديه|وتكون|بسيط|بسعر مميز|أعطني روابط|أعطني رابط|kleinanzeigen\.de|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout24|autoscout|amazon\.de|amazon|ebay\.de|ebay|youtube)/gi, ' ')
-    .replace(/\s+/g, ' ').trim() || q.trim();
-  const enc = encodeURIComponent(cleaned);
+    .replace(/(أريدك أن تقوم بالبحث عن|قم بالبحث لي عن|قم بالبحث عن|ابحث لي عن|ابحث لي|ابحث عن|ابحث|عن نفس هذه السيارة|نفس هذه السيارة|هذه السيارة|عنها|في الإنترنت|في الانترنت|في موقع|في|على موقع|على|عن سيارة|تكون لديها|تكون لديه|لديها|لديه|وتكون|بسيط|بسعر مميز|أحضر لي روابط|أعطني روابط|أعطني رابط|روابط|kleinanzeigen\.de|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout24|autoscout|amazon\.de|amazon|ebay\.de|ebay|youtube)/gi, ' ')
+    .replace(/\s+/g, ' ').trim();
+  const effectiveQuery = carTerms.length ? carTerms.join(' ') : (cleaned || (recentHist.slice(-140).trim()) || q.trim());
+  const enc = encodeURIComponent(effectiveQuery);
 
   if (isCar) {
     const kaSlug = (carTerms.length ? carTerms.join('-') : 'gebrauchtwagen').replace(/[^a-z0-9-]+/gi, '-').replace(/^-|-$/g, '');
     const kaSort = isCheap ? 'sortierung:preis/' : '';
+    const labelTerms = carTerms.filter(t => t !== 'unfallwagen').join(' ').toUpperCase() || (isDamaged ? 'سيارات بحادث' : 'سيارات مستعملة');
     links.push({
-      title: isDamaged ? 'Kleinanzeigen — سيارات بحادث (مرتّبة بالأرخص)' : `Kleinanzeigen — ${carTerms.join(' ') || 'سيارات مستعملة'}`,
+      title: isDamaged ? `Kleinanzeigen — ${labelTerms} (بحادث / الأرخص)` : `Kleinanzeigen — ${labelTerms}`,
       url: `https://www.kleinanzeigen.de/s-autos/${kaSort}${kaSlug}/k0c216`,
       desc: 'Verified Kleinanzeigen live car listings'
     });
     const asParams = new URLSearchParams({ atype: 'C', cy: 'D', sort: 'price', desc: '0' });
     if (isDamaged) asParams.set('damaged_listing', 'only');
-    if (carTerms.filter(t => t !== 'unfallwagen').length) asParams.set('q', carTerms.filter(t => t !== 'unfallwagen').join(' '));
+    const asQuery = carTerms.filter(t => t !== 'unfallwagen').join(' ');
+    if (asQuery) asParams.set('q', asQuery);
     links.push({
-      title: isDamaged ? 'AutoScout24 — سيارات بحادث (مرتّبة بالأرخص)' : `AutoScout24 — ${carTerms.join(' ') || 'سيارات مستعملة'}`,
+      title: isDamaged ? `AutoScout24 — ${labelTerms} (بحادث / الأرخص)` : `AutoScout24 — ${labelTerms}`,
       url: `https://www.autoscout24.de/lst?${asParams.toString()}`,
       desc: 'Verified AutoScout24 live car listings'
     });
     links.push({
-      title: `Google — نتائج ${carTerms.join(' ') || 'Unfallwagen'} على Kleinanzeigen`,
-      url: `https://www.google.com/search?q=${encodeURIComponent('site:kleinanzeigen.de/s-anzeige ' + (carTerms.join(' ') || 'unfallwagen'))}`,
+      title: `Google — إعلانات ${labelTerms} على Kleinanzeigen`,
+      url: `https://www.google.com/search?q=${encodeURIComponent('site:kleinanzeigen.de/s-anzeige ' + (carTerms.join(' ') || 'gebrauchtwagen'))}`,
       desc: 'Direct individual Kleinanzeigen car ads via Google'
     });
-    return { cleaned: carTerms.join(' ') || cleaned, links };
+    return { cleaned: effectiveQuery, links };
   }
 
   if (/klein\s*anzeigen|kleine\s*anzeigen/i.test(low)) {
-    const slug = cleaned.toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '');
-    links.push({ title: `Kleinanzeigen: ${cleaned}`, url: `https://www.kleinanzeigen.de/s-${encodeURIComponent(slug || cleaned)}/k0`, desc: 'Direct Kleinanzeigen search' });
+    const slug = effectiveQuery.toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '');
+    links.push({ title: `Kleinanzeigen: ${effectiveQuery}`, url: `https://www.kleinanzeigen.de/s-${encodeURIComponent(slug || effectiveQuery)}/k0`, desc: 'Direct Kleinanzeigen search' });
   }
   if (/amazon/i.test(low)) {
-    links.push({ title: `Amazon: ${cleaned}`, url: `https://www.amazon.de/s?k=${enc}`, desc: 'Direct Amazon search' });
+    links.push({ title: `Amazon: ${effectiveQuery}`, url: `https://www.amazon.de/s?k=${enc}`, desc: 'Direct Amazon search' });
   }
   if (/ebay/i.test(low)) {
-    links.push({ title: `eBay: ${cleaned}`, url: `https://www.ebay.de/sch/i.html?_nkw=${enc}`, desc: 'Direct eBay search' });
+    links.push({ title: `eBay: ${effectiveQuery}`, url: `https://www.ebay.de/sch/i.html?_nkw=${enc}`, desc: 'Direct eBay search' });
   }
   if (/youtube|يوتيوب/i.test(low)) {
-    links.push({ title: `YouTube: ${cleaned}`, url: `https://www.youtube.com/results?search_query=${enc}`, desc: 'Direct YouTube search' });
+    links.push({ title: `YouTube: ${effectiveQuery}`, url: `https://www.youtube.com/results?search_query=${enc}`, desc: 'Direct YouTube search' });
   }
   if (!links.length) {
-    links.push({ title: `Google: ${cleaned}`, url: `https://www.google.com/search?q=${enc}`, desc: 'Direct Google search' });
+    links.push({ title: `Google: ${effectiveQuery}`, url: `https://www.google.com/search?q=${enc}`, desc: 'Direct Google search' });
   }
-  return { cleaned, links };
+  return { cleaned: effectiveQuery, links };
 }
 
-async function liveWebSearch(question) {
+async function liveWebSearch(question, history = []) {
   if (!SEARCH_INTENT.test(question || '')) return '';
-  const { cleaned, links } = buildDirectLinks(question);
+  const { cleaned, links } = buildDirectLinks(question, history);
   const low = question.toLowerCase();
   let query = cleaned;
   if (/klein\s*anzeigen|kleine\s*anzeigen/i.test(low)) query = `kleinanzeigen.de ${cleaned}`;
@@ -323,15 +348,15 @@ module.exports = (ctx) => {
   ipcMain.handle('ai', async (e, { action, text, question, history }) => {
     const w = ctx.W(e);
     try {
-      const sys = ctx.system() + ' CRITICAL LINK RULE: NEVER invent or guess URLs from memory, and NEVER use ebay-kleinanzeigen.de (it is permanently closed) or suchen.mobile.de (returns 403). ONLY output the exact verified URLs provided in [LIVE WEB SEARCH RESULTS] formatted as clickable Markdown links [Title](https://...).';
+      const sys = ctx.system() + ' CRITICAL RULES: (1) Always remember and follow the full conversation history — when the user refers to "this car", "the same one", "find links for it", etc., use the exact car/product/topic from previous messages in this chat! (2) NEVER invent or guess URLs from memory, and NEVER use ebay-kleinanzeigen.de or suchen.mobile.de. ONLY output the exact verified URLs provided in [LIVE WEB SEARCH RESULTS] formatted as clickable Markdown links [Title](https://...).';
       const one = async (content) => sanitizeLinks(await unifiedAsk(sys, [{ role: 'user', content }]));
       if (action === 'translate') return { ok: true, text: await one(`Translate the following text into ${ctx.langName()}. Output only the translation:\n\n${text}`) };
       if (action === 'explain') return { ok: true, text: await one(`Explain this text simply:\n\n${text}`) };
       if (action === 'reply') return { ok: true, text: await one(`Suggest 3 short, polite replies with different tones to this post/comment, in the same language as the post:\n\n${text}`) };
       if (action === 'image') return { ok: true, text: await one([await imageBlock(text, w), { type: 'text', text: 'Describe this image in detail. If it contains text, transcribe and translate it.' }]) };
       if (action === 'general') {
-        const webCtx = await liveWebSearch(question);
-        const msgs = (history || []).slice(-10).map(m => ({ role: m.role, content: m.content }));
+        const webCtx = await liveWebSearch(question, history);
+        const msgs = (history || []).slice(-16).map(m => ({ role: m.role, content: m.content }));
         msgs.push({ role: 'user', content: question + webCtx });
         return { ok: true, text: sanitizeLinks(await unifiedAsk(sys, msgs)) };
       }
@@ -345,11 +370,12 @@ module.exports = (ctx) => {
         return { ok: true, text: await one(`${block}\n\n---\nList the most important moments of this video as a bullet list. Start every bullet with its timestamp in square brackets, e.g. [3:15], followed by a short description.`) };
       }
       if (action === 'ask') {
-        const webCtx = await liveWebSearch(question);
-        const msgs = (history || []).slice(-10).map(m => ({ role: m.role, content: m.content }));
+        const webCtx = await liveWebSearch(question, history);
+        const msgs = (history || []).slice(-16).map(m => ({ role: m.role, content: m.content }));
+        const hasHistory = msgs.length > 0;
         const prompt = webCtx
-          ? `My question: ${question}${webCtx}\n\n(Current open tab for optional reference: ${(pctx && pctx.url) || ''})`
-          : `${block}\n\n---\nMy question: ${question}`;
+          ? `My question: ${question}${webCtx}`
+          : (hasHistory ? `${question}\n\n(Current browser tab context if relevant: ${(pctx && pctx.title) || ''} — ${(pctx && pctx.url) || ''})` : `${block}\n\n---\nMy question: ${question}`);
         msgs.push({ role: 'user', content: prompt });
         return { ok: true, text: sanitizeLinks(await unifiedAsk(sys, msgs)) };
       }
