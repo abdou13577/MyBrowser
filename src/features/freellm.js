@@ -61,31 +61,69 @@ function toTextOnlyMessages(system, messages) {
   return out;
 }
 
-// ---------- البحث الحي في الويب + توليد روابط مباشرة للمواقع الشهيرة ----------
-const SEARCH_INTENT = /(ابحث|بحث|دور|أعطني رابط|أعطني روابط|روابط|رابط|سيار[ةه]|سعر|أسعار|شراء|للبيع|أين أجد|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout|amazon|ebay|youtube|search|find|buy|price|suche|auto kaufen|gebrauchtwagen)/i;
+// ---------- البحث الحي في الويب + توليد روابط مباشرة حقيقية ومختبرة ----------
+const SEARCH_INTENT = /(ابحث|بحث|دور|أعطني رابط|أعطني روابط|روابط|رابط|سيار[ةه]|حادث|سعر|أسعار|شراء|للبيع|أين أجد|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout|amazon|ebay|youtube|search|find|buy|price|suche|auto kaufen|gebrauchtwagen|unfallwagen)/i;
+
+function sanitizeLinks(text) {
+  return String(text || '')
+    // تحويل الدومين القديم المغلق ebay-kleinanzeigen.de إلى kleinanzeigen.de
+    .replace(/https?:\/\/(?:www\.)?ebay-kleinanzeigen\.de/gi, 'https://www.kleinanzeigen.de')
+    // استبدال روابط suchen.mobile.de التي ترفض الدخول بـ 403 بروابط AutoScout24/Kleinanzeigen تعمل فعلياً
+    .replace(/https?:\/\/suchen\.mobile\.de\/[^\s)]+/gi, 'https://www.autoscout24.de/lst?atype=C&cy=D&sort=price&desc=0');
+}
 
 function buildDirectLinks(q) {
   const links = [];
   const low = q.toLowerCase();
-  // تنظيف الاستعلام لاستخراج الكلمات المفتاحية للبحث المباشر
+  const isCar = /(سيار|حادث|مصدوم|auto|car|golf|bmw|mercedes|audi|vw|polo|passat|opel|ford|toyota|skoda|seat|unfall|gebrauchtwagen)/i.test(low);
+  const isDamaged = /(حادث|مصدوم|أضرار|تلف|unfall|beschädigt|damaged)/i.test(low);
+  const isCheap = /(مميز|رخيص|أرخص|اقتصادي|günstig|billig|cheap)/i.test(low);
+
+  // استخراج الماركة/الموديل إن وُجدت بأحرف لاتينية أو عربية
+  const carTerms = [];
+  const latinModels = q.match(/\b(vw|volkswagen|golf|polo|passat|tiguan|bmw|mercedes|benz|audi|opel|corsa|astra|ford|focus|fiesta|toyota|yaris|corolla|skoda|octavia|fabia|seat|ibiza|leon|renault|clio|peugeot|hyundai|kia|nissan|dacia|fiat|c3|c4|a3|a4|a6|e220|c200|320d|520d|[1-8])\b/gi);
+  if (latinModels) carTerms.push(...new Set(latinModels.map(x => x.toLowerCase())));
+  if (/غولف|جولف/i.test(q) && !carTerms.includes('golf')) carTerms.push('golf');
+  if (/مرسيدس/i.test(q) && !carTerms.includes('mercedes')) carTerms.push('mercedes');
+  if (/بي ام|بي إم/i.test(q) && !carTerms.includes('bmw')) carTerms.push('bmw');
+  if (/أودي|اودي/i.test(q) && !carTerms.includes('audi')) carTerms.push('audi');
+  if (/تويوتا/i.test(q) && !carTerms.includes('toyota')) carTerms.push('toyota');
+  if (isDamaged) carTerms.push('unfallwagen');
+  if (/أوتوماتيك|اتوماتيك|automatik/i.test(q)) carTerms.push('automatik');
+  if (/ديزل|diesel/i.test(q)) carTerms.push('diesel');
+
   const cleaned = q
-    .replace(/(ابحث لي|ابحث عن|ابحث|في موقع|في|على موقع|على|عن سيارة|عن|أعطني روابط|أعطني رابط|kleinanzeigen\.de|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout24|autoscout|amazon\.de|amazon|ebay\.de|ebay|youtube)/gi, ' ')
+    .replace(/(أريدك أن تقوم بالبحث عن|ابحث لي عن|ابحث لي|ابحث عن|ابحث|في موقع|في|على موقع|على|عن سيارة|تكون لديها|تكون لديه|لديها|لديه|وتكون|بسيط|بسعر مميز|أعطني روابط|أعطني رابط|kleinanzeigen\.de|kleinanzeigen|kleine anzeigen|mobile\.de|autoscout24|autoscout|amazon\.de|amazon|ebay\.de|ebay|youtube)/gi, ' ')
     .replace(/\s+/g, ' ').trim() || q.trim();
-  const slug = cleaned.toLowerCase().replace(/[^a-z0-9äöüß\u0600-\u06FF]+/gi, '-').replace(/^-|-$/g, '');
   const enc = encodeURIComponent(cleaned);
 
+  if (isCar) {
+    const kaSlug = (carTerms.length ? carTerms.join('-') : 'gebrauchtwagen').replace(/[^a-z0-9-]+/gi, '-').replace(/^-|-$/g, '');
+    const kaSort = isCheap ? 'sortierung:preis/' : '';
+    links.push({
+      title: isDamaged ? 'Kleinanzeigen — سيارات بحادث (مرتّبة بالأرخص)' : `Kleinanzeigen — ${carTerms.join(' ') || 'سيارات مستعملة'}`,
+      url: `https://www.kleinanzeigen.de/s-autos/${kaSort}${kaSlug}/k0c216`,
+      desc: 'Verified Kleinanzeigen live car listings'
+    });
+    const asParams = new URLSearchParams({ atype: 'C', cy: 'D', sort: 'price', desc: '0' });
+    if (isDamaged) asParams.set('damaged_listing', 'only');
+    if (carTerms.filter(t => t !== 'unfallwagen').length) asParams.set('q', carTerms.filter(t => t !== 'unfallwagen').join(' '));
+    links.push({
+      title: isDamaged ? 'AutoScout24 — سيارات بحادث (مرتّبة بالأرخص)' : `AutoScout24 — ${carTerms.join(' ') || 'سيارات مستعملة'}`,
+      url: `https://www.autoscout24.de/lst?${asParams.toString()}`,
+      desc: 'Verified AutoScout24 live car listings'
+    });
+    links.push({
+      title: `Google — نتائج ${carTerms.join(' ') || 'Unfallwagen'} على Kleinanzeigen`,
+      url: `https://www.google.com/search?q=${encodeURIComponent('site:kleinanzeigen.de/s-anzeige ' + (carTerms.join(' ') || 'unfallwagen'))}`,
+      desc: 'Direct individual Kleinanzeigen car ads via Google'
+    });
+    return { cleaned: carTerms.join(' ') || cleaned, links };
+  }
+
   if (/klein\s*anzeigen|kleine\s*anzeigen/i.test(low)) {
-    const isCar = /(سيار|auto|car|golf|bmw|mercedes|audi|vw|polo|passat|opel|ford|toyota|skoda)/i.test(low);
-    const url = isCar
-      ? `https://www.kleinanzeigen.de/s-autos/${encodeURIComponent(slug || cleaned)}/k0c216`
-      : `https://www.kleinanzeigen.de/s-${encodeURIComponent(slug || cleaned)}/k0`;
-    links.push({ title: `Kleinanzeigen: ${cleaned}`, url, desc: 'Direct Kleinanzeigen search results' });
-  }
-  if (/mobile\.de/i.test(low)) {
-    links.push({ title: `mobile.de: ${cleaned}`, url: `https://suchen.mobile.de/fahrzeuge/search.html?q=${enc}`, desc: 'Direct mobile.de car search' });
-  }
-  if (/autoscout/i.test(low)) {
-    links.push({ title: `AutoScout24: ${cleaned}`, url: `https://www.autoscout24.de/lst?q=${enc}`, desc: 'Direct AutoScout24 search' });
+    const slug = cleaned.toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '');
+    links.push({ title: `Kleinanzeigen: ${cleaned}`, url: `https://www.kleinanzeigen.de/s-${encodeURIComponent(slug || cleaned)}/k0`, desc: 'Direct Kleinanzeigen search' });
   }
   if (/amazon/i.test(low)) {
     links.push({ title: `Amazon: ${cleaned}`, url: `https://www.amazon.de/s?k=${enc}`, desc: 'Direct Amazon search' });
@@ -285,8 +323,8 @@ module.exports = (ctx) => {
   ipcMain.handle('ai', async (e, { action, text, question, history }) => {
     const w = ctx.W(e);
     try {
-      const sys = ctx.system() + ' When providing websites or search results, ALWAYS format URLs as clickable Markdown links like [Title](https://...) so the user can click them directly.';
-      const one = (content) => unifiedAsk(sys, [{ role: 'user', content }]);
+      const sys = ctx.system() + ' CRITICAL LINK RULE: NEVER invent or guess URLs from memory, and NEVER use ebay-kleinanzeigen.de (it is permanently closed) or suchen.mobile.de (returns 403). ONLY output the exact verified URLs provided in [LIVE WEB SEARCH RESULTS] formatted as clickable Markdown links [Title](https://...).';
+      const one = async (content) => sanitizeLinks(await unifiedAsk(sys, [{ role: 'user', content }]));
       if (action === 'translate') return { ok: true, text: await one(`Translate the following text into ${ctx.langName()}. Output only the translation:\n\n${text}`) };
       if (action === 'explain') return { ok: true, text: await one(`Explain this text simply:\n\n${text}`) };
       if (action === 'reply') return { ok: true, text: await one(`Suggest 3 short, polite replies with different tones to this post/comment, in the same language as the post:\n\n${text}`) };
@@ -295,7 +333,7 @@ module.exports = (ctx) => {
         const webCtx = await liveWebSearch(question);
         const msgs = (history || []).slice(-10).map(m => ({ role: m.role, content: m.content }));
         msgs.push({ role: 'user', content: question + webCtx });
-        return { ok: true, text: await unifiedAsk(sys, msgs) };
+        return { ok: true, text: sanitizeLinks(await unifiedAsk(sys, msgs)) };
       }
       const pctx = await ctx.pageContext(w);
       const block = ctx.contextBlock(pctx);
@@ -313,7 +351,7 @@ module.exports = (ctx) => {
           ? `My question: ${question}${webCtx}\n\n(Current open tab for optional reference: ${(pctx && pctx.url) || ''})`
           : `${block}\n\n---\nMy question: ${question}`;
         msgs.push({ role: 'user', content: prompt });
-        return { ok: true, text: await unifiedAsk(sys, msgs) };
+        return { ok: true, text: sanitizeLinks(await unifiedAsk(sys, msgs)) };
       }
       return { ok: false, error: 'Unknown action' };
     } catch (err) {
