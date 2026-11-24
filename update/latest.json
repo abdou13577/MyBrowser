@@ -1,17 +1,17 @@
 {
-  "version": "3.4.1",
-  "date": "2026-11-24T17:35:45.940Z",
+  "version": "3.5.0",
+  "date": "2026-11-24T17:43:56.750Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "f5952194c807304a9fd62cfa0b4f731b9c395baf",
+  "ref": "3eae18770a91b6797239dfa06f955ffa1608663c",
   "notes": {
-    "ar": "الإصدار 3.4.1: إصلاح الوضع الداكن لمنع انقلاب ألوان الصور والفيديوهات (خاصة على مواقع السيارات والمتاجر التي تستخدم وسوم picture وملء الشاشة) فتظهر الصور والفيديوهات بألوانها الطبيعية دائماً.",
-    "en": "Version 3.4.1: Fixed Dark Mode inverted colors on photos & videos (eliminates double-inversion inside <picture>, [role=\"img\"], background-image containers, and fullscreen video)."
+    "ar": "الإصدار 3.5.0: إضافة البحث الذكي والإكمال التلقائي الفوري في شريط العنوان (مثل Google Chrome) — يعرض تلقائياً أثناء الكتابة اقتراحات Google الحية بالإضافة إلى نتائج السجل والمفضلة والتبويبات المفتوحة مع التنقّل بالأسهم.",
+    "en": "Version 3.5.0: Added Smart Omnibox instant autocomplete in the address bar (like Google Chrome) — shows live Google search suggestions alongside matching History, Bookmarks, and Open Tabs as you type."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "635b10723b98c1ede4a3bc5238e47531b056ae1b7084614f91a0ec3cac30fbdc",
+      "sha256": "3fca8014fb227422813d60c670cb27627438e07ef9807d7652f2281e04d6e0e3",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "6ceefb8c2049da28f4f0c68daa2cca55601c15f944675ffc155d7928f6cfe70c",
-      "size": 6131
+      "sha256": "703f8907cc7fdcac672ab8889ceece5f12cfc3fe9c1edf1e25f3a988da05534e",
+      "size": 6216
     },
     {
       "path": "src/features/apps.js",
@@ -130,6 +130,11 @@
       "size": 4017
     },
     {
+      "path": "src/features/omnibox.js",
+      "sha256": "7ae791add484aaed9b026531871a8ac62800480c006316ac25707f836eb64425",
+      "size": 10373
+    },
+    {
       "path": "src/features/perfguard.js",
       "sha256": "540308a13b52aab5f643d31132f4a8d76fbeaa7e82fc677407a77a12f707e91f",
       "size": 4934
@@ -191,8 +196,8 @@
     },
     {
       "path": "src/preload.js",
-      "sha256": "e133e82497249265c54f1419bb4474b6fe56e2b58a8ae0f2a950781a1eb002d2",
-      "size": 7000
+      "sha256": "9a838086bc895c854b57c094d9218ae696dd3ad05aba9e099686461477d8f2ea",
+      "size": 7124
     },
     {
       "path": "src/ui/backup.html",
