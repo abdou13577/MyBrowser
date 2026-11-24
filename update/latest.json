@@ -1,17 +1,17 @@
 {
-  "version": "3.3.4",
-  "date": "2026-11-24T17:18:49.096Z",
+  "version": "3.4.0",
+  "date": "2026-11-24T17:23:08.942Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "54396c8fc94f3e148e907e70f00ba0bc5af1dc2f",
+  "ref": "e6da3f2b46e1d0f82742944185445ceff86cfc3f",
   "notes": {
-    "ar": "الإصدار 3.3.4: إصلاح روابط البحث عن السيارات في المساعد الذكي — توليد روابط حقيقية ومختبرة لـ Kleinanzeigen (النطاق الجديد) وAutoScout24 (مع دعم البحث بالعربية مثل سيارات بحادث بسيط ومرتّبة بالأرخص) ومنع الروابط القديمة أو المرفوضة (403).",
-    "en": "Version 3.3.4: Fixed AI car search links — generates verified working Kleinanzeigen.de & AutoScout24.de search URLs (including Arabic queries like damaged/Unfallwagen cars sorted by price) and blocks dead ebay-kleinanzeigen.de & 403 mobile.de links."
+    "ar": "الإصدار 3.4.0: تفعيل البحث الفوري الحقيقي ومقارنة الأسعار عبر المتاجر (🛒 مقارنة الأسعار / Monitora prezzi) لأي منتج — سيارات، ملابس، إلكترونيات وغيرها — مع جدول مقارنة وروابط مباشرة لـ idealo وGoogle Shopping وAmazon وeBay وZalando وKleinanzeigen وAutoScout24.",
+    "en": "Version 3.4.0: Real-time live web price comparison (🛒 Compare Prices) for any product — cars, fashion, electronics, and more — with live multi-store search results and direct clickable links (idealo, Google Shopping, Amazon, eBay, Zalando, Kleinanzeigen, AutoScout24)."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "18065f60476b25a66f8bc54db10946f33da7efec088dc9957d6cb08254b1224a",
+      "sha256": "d39e5077d5db4cc3725ef7bb1fcbddbbb74be04273b1e150dc2687152e277f61",
       "size": 1334
     },
     {
@@ -111,8 +111,8 @@
     },
     {
       "path": "src/features/freellm.js",
-      "sha256": "0d4d9e90a3633bead1741132fdc159c6e10ef6c22281ba000acd8914dfc0a36b",
-      "size": 20217
+      "sha256": "347eaa18a45024a498d597550c265887b1f42c91d17db701b420dc55d7708357",
+      "size": 27992
     },
     {
       "path": "src/features/history.js",
