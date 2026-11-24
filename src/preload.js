@@ -117,5 +117,6 @@ contextBridge.exposeInMainWorld('browser', {
 contextBridge.exposeInMainWorld('mbExtras', {
   setColor: (c) => ipcRenderer.invoke('extras:setColor', c),
   setPages: (t) => ipcRenderer.invoke('extras:setPages', t),
+  currentUrl: () => ipcRenderer.invoke('extras:currentUrl'),
   chooser: () => ipcRenderer.invoke('extras:chooser')
 });

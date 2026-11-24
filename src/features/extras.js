@@ -1,110 +1,219 @@
-// إضافات الحسابات: لون نافذة لكل حساب، زر تبديل الحساب في أي وقت، صفحات بدء لكل حساب.
-// + إخفاء خطأ "Script failed to execute" الذي يملأ السجل (رفض غير معالج لصفحات تتغير أثناء تنفيذ سكربت).
+// إضافات الحسابات: لون نافذة لكل حساب، زر تبديل الحساب في أي وقت، صفحات بدء مخصصة لكل حساب.
+// + إصلاح خطأ "Script failed to execute" المتكرر في السجل (وعود executeJavaScript غير المعالجة).
 // مستقلة عن main.js: تضيف واجهتها إلى نافذة الواجهة بعد تحميلها.
-const { app, ipcMain } = require('electron');
+const { app, ipcMain, webContents } = require('electron');
 
 const COLORS = ['#7c9cff', '#8B7CFF', '#4dd0e1', '#3ecf8e', '#ffd166', '#ff9f5a', '#ff6b7e', '#e07cff'];
 const HEX = /^#[0-9a-f]{6}$/i;
 
 const L = {
-  ar: { switch: 'تبديل الحساب', color: 'لون النافذة', pages: 'صفحات البدء (رابط في كل سطر)', save: 'حفظ', saved: 'تم الحفظ' },
-  en: { switch: 'Switch account', color: 'Window color', pages: 'Startup pages (one URL per line)', save: 'Save', saved: 'Saved' },
-  de: { switch: 'Konto wechseln', color: 'Fensterfarbe', pages: 'Startseiten (eine URL pro Zeile)', save: 'Speichern', saved: 'Gespeichert' },
-  fr: { switch: 'Changer de compte', color: 'Couleur de la fenêtre', pages: 'Pages de démarrage (une URL par ligne)', save: 'Enregistrer', saved: 'Enregistré' },
-  es: { switch: 'Cambiar de cuenta', color: 'Color de la ventana', pages: 'Páginas de inicio (una URL por línea)', save: 'Guardar', saved: 'Guardado' },
-  it: { switch: 'Cambia account', color: 'Colore finestra', pages: 'Pagine iniziali (un URL per riga)', save: 'Salva', saved: 'Salvato' },
-  tr: { switch: 'Hesap değiştir', color: 'Pencere rengi', pages: 'Açılış sayfaları (her satıra bir URL)', save: 'Kaydet', saved: 'Kaydedildi' }
+  ar: { switch: 'تبديل الحساب', color: 'لون النافذة', pages: 'صفحات البدء المخصصة (رابط في كل سطر)', addCur: '+ الصفحة الحالية', save: 'حفظ', saved: 'تم الحفظ', ph: 'youtube.com\nmail.google.com' },
+  en: { switch: 'Switch account', color: 'Window color', pages: 'Custom startup pages (one URL per line)', addCur: '+ Current page', save: 'Save', saved: 'Saved', ph: 'youtube.com\nmail.google.com' },
+  de: { switch: 'Konto wechseln', color: 'Fensterfarbe', pages: 'Eigene Startseiten (eine URL pro Zeile)', addCur: '+ Aktuelle Seite', save: 'Speichern', saved: 'Gespeichert', ph: 'youtube.com\nmail.google.com' },
+  fr: { switch: 'Changer de compte', color: 'Couleur de la fenêtre', pages: 'Pages de démarrage (une URL par ligne)', addCur: '+ Page actuelle', save: 'Enregistrer', saved: 'Enregistré', ph: 'youtube.com\nmail.google.com' },
+  es: { switch: 'Cambiar de cuenta', color: 'Color de la ventana', pages: 'Páginas de inicio (una URL por línea)', addCur: '+ Página actual', save: 'Guardar', saved: 'Guardado', ph: 'youtube.com\nmail.google.com' },
+  it: { switch: 'Cambia account', color: 'Colore finestra', pages: 'Pagine iniziali (un URL per riga)', addCur: '+ Pagina attuale', save: 'Salva', saved: 'Salvato', ph: 'youtube.com\nmail.google.com' },
+  tr: { switch: 'Hesap değiştir', color: 'Pencere rengi', pages: 'Özel açılış sayfaları (her satıra bir URL)', addCur: '+ Geçerli sayfa', save: 'Kaydet', saved: 'Kaydedildi', ph: 'youtube.com\nmail.google.com' }
 };
 
 const CSS = `
-  #mbxSwitch { width: 34px; height: 34px; border: 0; border-radius: 10px; background: transparent; color: inherit; cursor: pointer; font-size: 17px; display: grid; place-items: center; }
-  #mbxSwitch:hover { background: rgba(255,255,255,.1); }
-  #toolbar { position: relative; background-image: linear-gradient(180deg, color-mix(in srgb, var(--mbx, #7c9cff) 26%, transparent), transparent 70%); }
-  #toolbar::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--mbx, #7c9cff); pointer-events: none; z-index: 5; }
+  #mbxSwitch {
+    width: 34px; height: 34px; border: 1px solid color-mix(in srgb, var(--mbx, #7c9cff) 38%, rgba(255,255,255,.12));
+    border-radius: 50%; background: color-mix(in srgb, var(--mbx, #7c9cff) 14%, transparent);
+    color: #EEF0FF; cursor: pointer; display: grid; place-items: center; flex-shrink: 0;
+    transition: background .15s, border-color .15s, transform .12s;
+  }
+  #mbxSwitch:hover { background: color-mix(in srgb, var(--mbx, #7c9cff) 28%, rgba(255,255,255,.08)); border-color: var(--mbx, #7c9cff); color: #fff; }
+  #mbxSwitch:active { transform: scale(.95); }
+  #mbxSwitch svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; }
+  #toolbar {
+    position: relative;
+    background:
+      radial-gradient(560px 120px at 10% -40%, color-mix(in srgb, var(--mbx, #7c9cff) 32%, transparent), transparent 72%),
+      linear-gradient(180deg, color-mix(in srgb, var(--mbx, #7c9cff) 26%, #0C0E20), color-mix(in srgb, var(--mbx, #7c9cff) 9%, #090A16)) !important;
+  }
+  #toolbar::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+    background: var(--mbx, #7c9cff); pointer-events: none; z-index: 5;
+  }
+  #toolbar::after {
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--mbx, #7c9cff) 65%, transparent), transparent) !important;
+  }
+  .tab.active {
+    border-color: color-mix(in srgb, var(--mbx, #7c9cff) 45%, rgba(255,255,255,.12)) !important;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--mbx, #7c9cff) 35%, rgba(255,255,255,.12)), 0 4px 14px rgba(0,0,0,.25) !important;
+  }
   #profileMenu { max-height: 86vh; overflow: auto; }
   #mbxBox { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); margin: 6px 0; }
-  #mbxBox label { font-size: 12px; opacity: .75; }
-  #mbxSw { display: flex; gap: 7px; flex-wrap: wrap; }
-  #mbxSw i { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-  #mbxSw i.on { border-color: #fff; }
-  #mbxPages { width: 100%; min-height: 64px; resize: vertical; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: inherit; padding: 6px 8px; font-size: 12.5px; direction: ltr; }
-  #mbxSave { align-self: flex-start; height: 30px; padding: 0 14px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 700; background: var(--mbx, #7c9cff); color: #0b0b16; }
+  #mbxBox label { font-size: 12px; opacity: .78; }
+  #mbxSw { display: flex; gap: 8px; flex-wrap: wrap; }
+  #mbxSw i { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .12s, border-color .12s; }
+  #mbxSw i:hover { transform: scale(1.12); }
+  #mbxSw i.on { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.22); }
+  #mbxPages { width: 100%; min-height: 66px; resize: vertical; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: inherit; padding: 6px 8px; font-size: 12.5px; direction: ltr; font-family: inherit; }
+  #mbxPages:focus { outline: 2px solid var(--mbx, #7c9cff); outline-offset: 1px; }
+  #mbxActs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #mbxSave { height: 30px; padding: 0 14px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 700; background: var(--mbx, #7c9cff); color: #0b0b16; }
+  #mbxAddCur { height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: inherit; cursor: pointer; font-size: 12px; }
+  #mbxAddCur:hover { background: rgba(255,255,255,.12); }
 `;
+
+function blendHex(fg, bg, alpha) {
+  const parse = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const a = parse(fg), b = parse(bg);
+  const mix = (i) => Math.round(a[i] * alpha + b[i] * (1 - alpha)).toString(16).padStart(2, '0');
+  return '#' + mix(0) + mix(1) + mix(2);
+}
 
 function uiScript(data, lbl) {
   return `(() => {
     const D = ${JSON.stringify(data)}, T = ${JSON.stringify(lbl)}, COLORS = ${JSON.stringify(COLORS)};
     const B = window.mbExtras; if (!B) return 'nobridge';
     document.documentElement.style.setProperty('--mbx', D.color);
-    if (!document.getElementById('mbxStyle')) { const s = document.createElement('style'); s.id = 'mbxStyle'; s.textContent = ${JSON.stringify(CSS)}; document.head.append(s); }
+    if (!document.getElementById('mbxStyle')) {
+      const s = document.createElement('style'); s.id = 'mbxStyle'; s.textContent = ${JSON.stringify(CSS)}; document.head.append(s);
+    }
     const pb = document.getElementById('profileBtn');
     if (pb && !document.getElementById('mbxSwitch')) {
-      const b = document.createElement('button'); b.id = 'mbxSwitch'; b.type = 'button'; b.textContent = '\\u21C4'; b.title = T.switch;
-      b.onclick = () => B.chooser(); pb.parentNode.insertBefore(b, pb);
+      const b = document.createElement('button');
+      b.id = 'mbxSwitch'; b.type = 'button'; b.title = T.switch; b.setAttribute('aria-label', T.switch);
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3l4 4-4 4"/><path d="M20 7H8"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h12"/></svg>';
+      b.onclick = () => B.chooser();
+      pb.parentNode.insertBefore(b, pb);
     }
+    if (D.guest) return 'ok';
     const menu = document.getElementById('profileMenu'), anchor = document.getElementById('pmGuest');
     if (menu && anchor && !document.getElementById('mbxBox')) {
       const box = document.createElement('div'); box.id = 'mbxBox';
       const l1 = document.createElement('label'); l1.textContent = T.color;
       const sw = document.createElement('div'); sw.id = 'mbxSw';
       for (const c of COLORS) {
-        const i = document.createElement('i'); i.style.background = c; if (c.toLowerCase() === D.color.toLowerCase()) i.className = 'on';
-        i.onclick = async () => { const r = await B.setColor(c); if (r && r.ok) { document.documentElement.style.setProperty('--mbx', c); sw.querySelectorAll('i').forEach(x => x.className = ''); i.className = 'on'; } };
+        const i = document.createElement('i'); i.style.background = c; i.setAttribute('role', 'button'); i.title = c;
+        if (c.toLowerCase() === D.color.toLowerCase()) i.className = 'on';
+        i.onclick = async () => {
+          const r = await B.setColor(c);
+          if (r && r.ok) {
+            document.documentElement.style.setProperty('--mbx', c);
+            sw.querySelectorAll('i').forEach(x => x.className = '');
+            i.className = 'on';
+          }
+        };
         sw.append(i);
       }
       const l2 = document.createElement('label'); l2.textContent = T.pages;
-      const ta = document.createElement('textarea'); ta.id = 'mbxPages'; ta.spellcheck = false; ta.value = (D.pages || []).join('\\n');
+      const ta = document.createElement('textarea'); ta.id = 'mbxPages'; ta.spellcheck = false; ta.placeholder = T.ph;
+      ta.value = (D.pages || []).join('\\n');
+      const acts = document.createElement('div'); acts.id = 'mbxActs';
       const sv = document.createElement('button'); sv.id = 'mbxSave'; sv.type = 'button'; sv.textContent = T.save;
-      sv.onclick = async () => { const r = await B.setPages(ta.value); if (r && r.ok) { ta.value = r.pages.join('\\n'); sv.textContent = T.saved; setTimeout(() => { sv.textContent = T.save; }, 1200); } };
-      box.append(l1, sw, l2, ta, sv); anchor.parentNode.insertBefore(box, anchor);
+      sv.onclick = async () => {
+        const r = await B.setPages(ta.value);
+        if (r && r.ok) {
+          ta.value = r.pages.join('\\n');
+          sv.textContent = T.saved;
+          setTimeout(() => { sv.textContent = T.save; }, 1200);
+        }
+      };
+      const addCur = document.createElement('button'); addCur.id = 'mbxAddCur'; addCur.type = 'button'; addCur.textContent = T.addCur;
+      addCur.onclick = async () => {
+        const u = await B.currentUrl();
+        if (!u) return;
+        const lines = ta.value.split(/\\r?\\n/).map(s => s.trim()).filter(Boolean);
+        if (!lines.includes(u)) { lines.push(u); ta.value = lines.join('\\n'); }
+      };
+      acts.append(sv, addCur);
+      box.append(l1, sw, l2, ta, acts);
+      anchor.parentNode.insertBefore(box, anchor);
     }
     return 'ok';
   })()`;
 }
 
 module.exports = (ctx) => {
-  // 1) السجل: رفض executeJavaScript الذي لا يعالجه أحد يُسجَّل كـ UNHANDLED. نضيف معالجاً صامتاً دون تغيير ما يراه المستدعي.
-  app.on('web-contents-created', (_e, wc) => {
+  // 1) إصلاح خطأ "Script failed to execute" في السجل:
+  // نغلف executeJavaScript لكل WebContents (الحالية والمستقبلية) بمعالج صامت للرفض غير المعالج
+  // دون تغيير القيمة أو الخطأ الذي يراه المستدعي عند استخدام await أو .catch()
+  const guardWc = (wc) => {
     try {
+      if (!wc || wc._mbxGuarded || typeof wc.executeJavaScript !== 'function') return;
+      wc._mbxGuarded = true;
       const orig = wc.executeJavaScript.bind(wc);
-      wc.executeJavaScript = (...a) => { const p = orig(...a); try { p.catch(() => {}); } catch {} return p; };
+      wc.executeJavaScript = (...a) => {
+        const p = orig(...a);
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+        return p;
+      };
     } catch {}
-  });
+  };
+  try { webContents.getAllWebContents().forEach(guardWc); } catch {}
+  app.on('web-contents-created', (_e, wc) => guardWc(wc));
 
   const profile = (w) => { try { return ctx.profileOf(w); } catch { return null; } };
   const lblFor = () => L[(ctx.lang() || 'en').slice(0, 2)] || L.en;
   const wOf = (e) => { try { return ctx.W(e); } catch { return null; } };
+  const colorOf = (p) => {
+    if (p && HEX.test(p.color || '')) return p.color;
+    const list = ctx.settings.profiles || [];
+    const idx = Math.max(0, list.indexOf(p));
+    return COLORS[idx % COLORS.length];
+  };
+  const applyWinColor = (w, color) => {
+    try {
+      if (process.platform !== 'darwin' && w && w.win && !w.win.isDestroyed() && typeof w.win.setTitleBarOverlay === 'function') {
+        w.win.setTitleBarOverlay({ color: blendHex(color, '#0C0E20', 0.26), symbolColor: '#EEF0FF', height: 40 });
+      }
+    } catch {}
+  };
 
   ipcMain.handle('extras:setColor', (e, c) => {
     const w = wOf(e), p = profile(w);
-    if (!p || typeof c !== 'string' || !HEX.test(c)) return { ok: false };
+    if (!p || (w && w.guest) || typeof c !== 'string' || !HEX.test(c)) return { ok: false };
     p.color = c; ctx.saveSettings();
+    for (const win of ctx.windows) {
+      if (!win.guest && win.profileId === p.id) {
+        applyWinColor(win, c);
+        try {
+          if (win.ui && !win.ui.webContents.isDestroyed()) {
+            win.ui.webContents.executeJavaScript(`document.documentElement.style.setProperty('--mbx', ${JSON.stringify(c)})`).catch(() => {});
+          }
+        } catch {}
+      }
+    }
     try { ctx.sendProfiles && ctx.sendProfiles(); } catch {}
     return { ok: true };
   });
 
   ipcMain.handle('extras:setPages', (e, text) => {
     const w = wOf(e), p = profile(w);
-    if (!p) return { ok: false };
+    if (!p || (w && w.guest)) return { ok: false };
     const pages = String(text || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean)
       .map(s => /^[a-z][a-z0-9+.-]*:/i.test(s) ? s : 'https://' + s)
-      .filter(s => /^https?:\/\//i.test(s)).slice(0, 8);
+      .filter(s => /^https?:\/\//i.test(s)).slice(0, 10);
     p.startupPages = pages; ctx.saveSettings();
     return { ok: true, pages };
+  });
+
+  ipcMain.handle('extras:currentUrl', (e) => {
+    try {
+      const w = wOf(e), wc = ctx.activeWc(w);
+      const u = wc ? wc.getURL() : '';
+      return /^https?:\/\//i.test(u) && !/\.mybrowser\.invalid\b/i.test(u) ? u : '';
+    } catch { return ''; }
   });
 
   ipcMain.handle('extras:chooser', () => { try { ctx.showAccountChooser && ctx.showAccountChooser(); } catch {} return true; });
 
   ctx.hooks.windowReady.push((w) => {
     try {
-      const p = profile(w); if (!p || !w.ui || w.ui.webContents.isDestroyed()) return;
-      const data = { color: HEX.test(p.color || '') ? p.color : COLORS[0], pages: p.startupPages || [] };
-      w.ui.webContents.executeJavaScript(uiScript(data, lblFor())).catch(() => {});
-      // صفحات البدء: تُفتح مرة واحدة عند أول تحميل للنافذة
+      const p = profile(w); if (!w || !w.ui || w.ui.webContents.isDestroyed()) return;
+      const color = w.guest ? '#90a4ae' : colorOf(p);
+      const pages = (!w.guest && p && Array.isArray(p.startupPages)) ? p.startupPages : [];
+      applyWinColor(w, color);
+      w.ui.webContents.executeJavaScript(uiScript({ color, pages, guest: !!w.guest }, lblFor())).catch(() => {});
+      // صفحات البدء المخصصة: تُفتح مرة واحدة عند أول تحميل للنافذة
       if (!w._mbxStarted) {
         w._mbxStarted = true;
-        if (!w.guest && !w.locked && !(w.order && w.order.length) && data.pages.length) {
-          for (const u of data.pages) { try { ctx.createTab(w, u); } catch {} }
+        if (!w.guest && !w.locked && !(w.order && w.order.length) && pages.length) {
+          pages.forEach((u, i) => { try { ctx.createTab(w, u, i === 0); } catch {} });
         }
       }
     } catch (e) { ctx.logLine('extras failed', e); }
