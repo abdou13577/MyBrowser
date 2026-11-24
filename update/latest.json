@@ -1,17 +1,17 @@
 {
-  "version": "3.3.3",
-  "date": "2026-11-24T17:01:25.231Z",
+  "version": "3.3.4",
+  "date": "2026-11-24T17:18:49.096Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "7c6c6c81ebc615195c3af80d045049c4a141ff34",
+  "ref": "54396c8fc94f3e148e907e70f00ba0bc5af1dc2f",
   "notes": {
-    "ar": "الإصدار 3.3.3: تفعيل تسريع كرت الشاشة RTX 2080 Ti (CUDA 12) لنموذج Whisper large-v3-turbo مع احتياط تلقائي لضمان أعلى دقة للعربية وجميع اللغات.",
-    "en": "Version 3.3.3: Enabled CUDA 12 GPU acceleration on RTX 2080 Ti for Whisper large-v3-turbo with safe CPU fallback for studio-grade Arabic & multilingual dictation."
+    "ar": "الإصدار 3.3.4: إصلاح روابط البحث عن السيارات في المساعد الذكي — توليد روابط حقيقية ومختبرة لـ Kleinanzeigen (النطاق الجديد) وAutoScout24 (مع دعم البحث بالعربية مثل سيارات بحادث بسيط ومرتّبة بالأرخص) ومنع الروابط القديمة أو المرفوضة (403).",
+    "en": "Version 3.3.4: Fixed AI car search links — generates verified working Kleinanzeigen.de & AutoScout24.de search URLs (including Arabic queries like damaged/Unfallwagen cars sorted by price) and blocks dead ebay-kleinanzeigen.de & 403 mobile.de links."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "6d0b193072e4b3024f3414fe10d6afbbeb62ed79a23c9277f7cc3f7a9a09bdd8",
+      "sha256": "18065f60476b25a66f8bc54db10946f33da7efec088dc9957d6cb08254b1224a",
       "size": 1334
     },
     {
@@ -111,8 +111,8 @@
     },
     {
       "path": "src/features/freellm.js",
-      "sha256": "d10b12f8c7be4b982caff6827b6df484c70ad948d5400c752c824021cd07528e",
-      "size": 17002
+      "sha256": "0d4d9e90a3633bead1741132fdc159c6e10ef6c22281ba000acd8914dfc0a36b",
+      "size": 20217
     },
     {
       "path": "src/features/history.js",
