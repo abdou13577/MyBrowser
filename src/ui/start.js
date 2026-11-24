@@ -11,6 +11,9 @@ document.getElementById('appsLbl').textContent = ({ ar: 'التطبيقات', en
 document.getElementById('historyLbl').textContent = ({ ar: 'السجل', en: 'History', de: 'Verlauf', it: 'Cronologia', fr: 'Historique', es: 'Historial', tr: 'Geçmiş' })[code] || 'History';
 document.getElementById('downloadsLbl').textContent = ({ ar: 'التنزيلات', en: 'Downloads', de: 'Downloads', it: 'Download', fr: 'Téléchargements', es: 'Descargas', tr: 'İndirilenler' })[code] || 'Downloads';
 document.getElementById('backupLbl').textContent = ({ ar: 'نسخة احتياطية', en: 'Backup', de: 'Sicherung', it: 'Backup', fr: 'Sauvegarde', es: 'Copia', tr: 'Yedek' })[code] || 'Backup';
+document.getElementById('wsLbl').textContent = ({ ar: 'مساحات العمل', en: 'Workspaces', de: 'Bereiche', it: 'Spazi', fr: 'Espaces', es: 'Espacios', tr: 'Alanlar' })[code] || 'Workspaces';
+document.getElementById('snapsLbl').textContent = ({ ar: 'الذاكرة بدون إنترنت', en: 'Offline Memory', de: 'Offline', it: 'Offline', fr: 'Hors ligne', es: 'Sin conexión', tr: 'Çevrimdışı' })[code] || 'Offline';
+document.getElementById('radarLbl').textContent = ({ ar: 'مراقب الأسعار', en: 'Price Radar', de: 'Preis-Radar', it: 'Radar prezzi', fr: 'Radar prix', es: 'Radar precios', tr: 'Fiyat Radarı' })[code] || 'Price Radar';
 
 const tick = () => {
   const d = new Date();

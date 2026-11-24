@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Price Drop Radar</title>
+<style>
+  :root { --void:#090A16; --card:#11132A; --ink:#EEF0FF; --mist:#A3A8C8; --line:rgba(255,255,255,.10); --iris:#8B7CFF; --azure:#4F8CFF; --aqua:#2EE6D6; --green:#3ecf8e; --ai:linear-gradient(120deg,var(--iris),var(--azure) 55%,var(--aqua)); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--void); color: var(--ink); font: 14px/1.5 "Segoe UI Variable Text","Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  body { padding: 24px; max-width: 1000px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 24px; background: var(--ai); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--mist); font-size: 13px; margin: 4px 0 0; }
+  .bar { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { height: 38px; padding: 0 16px; border-radius: 10px; border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+  .btn.primary { background: var(--ai); color: #090A16; }
+  .btn.soft { background: rgba(255,255,255,.08); color: var(--ink); border: 1px solid var(--line); }
+  .btn.danger { background: rgba(224,70,106,.16); color: #ff8aa4; border: 1px solid rgba(224,70,106,.35); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .top { display: flex; gap: 12px; align-items: flex-start; }
+  .thumb { width: 64px; height: 64px; border-radius: 12px; background: rgba(255,255,255,.06); flex: none; overflow: hidden; display: grid; place-items: center; font-size: 24px; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .info { min-width: 0; flex: 1; }
+  .info b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.35; }
+  .prices { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+  .cur { font-size: 22px; font-weight: 800; color: #fff; }
+  .orig { font-size: 13px; color: var(--mist); text-decoration: line-through; }
+  .drop { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(62,207,142,.18); color: var(--green); }
+  .meta { font-size: 11.5px; color: var(--mist); display: flex; justify-content: space-between; gap: 8px; }
+  .spark { width: 100%; height: 42px; background: rgba(255,255,255,.03); border-radius: 10px; padding: 4px; }
+  .acts { display: flex; gap: 8px; margin-top: auto; }
+  .acts .btn { height: 32px; padding: 0 12px; font-size: 12.5px; }
+  .empty { text-align: center; padding: 52px 20px; color: var(--mist); border: 1px dashed var(--line); border-radius: 16px; }
+  #status { font-size: 12.5px; color: var(--aqua); margin-bottom: 12px; min-height: 18px; }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 id="hTitle"></h1>
+      <p class="sub" id="hSub"></p>
+    </div>
+    <div class="bar">
+      <button class="btn primary" id="watchBtn"></button>
+      <button class="btn soft" id="checkBtn"></button>
+    </div>
+  </header>
+  <div id="status"></div>
+  <div id="list" class="grid"></div>
+
+<script>
+const STR = {
+  ar: { title: 'مراقب الأسعار', sub: 'راقب أي منتج في الخلفية واحصل على تنبيه فوري عند انخفاض سعره', watch: '+ راقب الصفحة الحالية', check: 'فحص الأسعار الآن', checking: 'جارٍ فحص الأسعار…', checked: (n, d) => `تم فحص ${n} منتج${d ? ` — انخفض سعر ${d}!` : ''}`, lowest: 'أدنى سعر', open: 'فتح المنتج', del: 'إزالة', empty: 'لا توجد منتجات مُراقَبة بعد. افتح أي منتج (Amazon, eBay…) واضغط «+ راقب الصفحة الحالية»!' },
+  en: { title: 'Price Drop Radar', sub: 'Track any product in the background and get notified when its price drops', watch: '+ Watch current page', check: 'Check prices now', checking: 'Checking prices…', checked: (n, d) => `Checked ${n} items${d ? ` — ${d} dropped!` : ''}`, lowest: 'Lowest', open: 'Open product', del: 'Remove', empty: 'No tracked products yet. Open any product page (Amazon, eBay…) and click "+ Watch current page"!' },
+  de: { title: 'Preis-Radar', sub: 'Überwache Produkte im Hintergrund und erhalte Hinweise bei Preissenkungen', watch: '+ Aktuelle Seite', check: 'Preise prüfen', checking: 'Prüfe Preise…', checked: (n, d) => `${n} Produkte geprüft${d ? ` — ${d} günstiger!` : ''}`, lowest: 'Tiefstpreis', open: 'Öffnen', del: 'Entfernen', empty: 'Noch keine Produkte überwacht.' },
+  fr: { title: 'Radar des prix', sub: 'Suivez les prix en arrière-plan et soyez alerté dès qu’un prix baisse', watch: '+ Suivre cette page', check: 'Vérifier maintenant', checking: 'Vérification…', checked: (n, d) => `${n} produits vérifiés${d ? ` — ${d} en baisse !` : ''}`, lowest: 'Plus bas', open: 'Ouvrir', del: 'Supprimer', empty: 'Aucun produit suivi pour le moment.' },
+  es: { title: 'Radar de precios', sub: 'Vigila productos en segundo plano y recibe alertas cuando bajen de precio', watch: '+ Vigilar página', check: 'Comprobar ahora', checking: 'Comprobando…', checked: (n, d) => `${n} comprobados${d ? ` — ¡${d} bajaron!` : ''}`, lowest: 'Mínimo', open: 'Abrir', del: 'Eliminar', empty: 'Aún no hay productos vigilados.' },
+  it: { title: 'Radar prezzi', sub: 'Monitora i prezzi in background e ricevi avvisi quando scendono', watch: '+ Monitora pagina', check: 'Controlla ora', checking: 'Controllo…', checked: (n, d) => `${n} controllati${d ? ` — ${d} scesi!` : ''}`, lowest: 'Minimo', open: 'Apri', del: 'Rimuovi', empty: 'Nessun prodotto monitorato.' },
+  tr: { title: 'Fiyat Radarı', sub: 'Ürün fiyatlarını arka planda izle, düştüğünde anında bildirim al', watch: '+ Bu sayfayı izle', check: 'Şimdi kontrol et', checking: 'Kontrol ediliyor…', checked: (n, d) => `${n} ürün kontrol edildi${d ? ` — ${d} düştü!` : ''}`, lowest: 'En düşük', open: 'Ürünü aç', del: 'Kaldır', empty: 'Henüz izlenen ürün yok.' }
+};
+const lang = (new URLSearchParams(location.search).get('lang') || 'ar').slice(0, 2);
+const L = STR[lang] || STR.en;
+document.documentElement.lang = lang;
+document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+document.title = L.title;
+document.getElementById('hTitle').textContent = L.title;
+document.getElementById('hSub').textContent = L.sub;
+document.getElementById('watchBtn').textContent = L.watch;
+document.getElementById('checkBtn').textContent = L.check;
+
+function sparkSvg(history) {
+  const pts = (history && history.length > 1) ? history.map(h => h.price) : [1, 1];
+  const min = Math.min(...pts), max = Math.max(...pts), span = (max - min) || 1;
+  const coords = pts.map((v, i) => {
+    const x = (i / Math.max(1, pts.length - 1)) * 260 + 4;
+    const y = 30 - ((v - min) / span) * 24 + 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 268 34');
+  svg.setAttribute('class', 'spark');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  poly.setAttribute('fill', 'none');
+  poly.setAttribute('stroke', '#2EE6D6');
+  poly.setAttribute('stroke-width', '2.2');
+  poly.setAttribute('stroke-linecap', 'round');
+  poly.setAttribute('stroke-linejoin', 'round');
+  poly.setAttribute('points', coords);
+  svg.append(poly);
+  return svg;
+}
+
+async function load() {
+  const list = await window.mbRadar.list();
+  const box = document.getElementById('list');
+  box.innerHTML = '';
+  if (!list.length) {
+    box.className = '';
+    const d = document.createElement('div'); d.className = 'empty'; d.textContent = L.empty;
+    box.append(d); return;
+  }
+  box.className = 'grid';
+  for (const it of list) {
+    const card = document.createElement('div'); card.className = 'card';
+    const top = document.createElement('div'); top.className = 'top';
+    const th = document.createElement('div'); th.className = 'thumb';
+    if (it.image) {
+      const img = new Image(); img.src = it.image; img.alt = ''; img.onerror = () => { img.remove(); th.textContent = '🏷️'; };
+      th.append(img);
+    } else th.textContent = '🏷️';
+    const info = document.createElement('div'); info.className = 'info';
+    const b = document.createElement('b'); b.textContent = it.title;
+    const prices = document.createElement('div'); prices.className = 'prices';
+    const cur = document.createElement('span'); cur.className = 'cur'; cur.textContent = `${it.price} ${it.currency || ''}`;
+    prices.append(cur);
+    if (it.originalPrice && it.price < it.originalPrice) {
+      const orig = document.createElement('span'); orig.className = 'orig'; orig.textContent = `${it.originalPrice} ${it.currency || ''}`;
+      const pct = Math.max(1, Math.round(((it.originalPrice - it.price) / it.originalPrice) * 100));
+      const dr = document.createElement('span'); dr.className = 'drop'; dr.textContent = `-${pct}%`;
+      prices.append(orig, dr);
+    }
+    info.append(b, prices);
+    top.append(th, info);
+
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const low = document.createElement('span'); low.textContent = `${L.lowest}: ${it.lowestPrice || it.price} ${it.currency || ''}`;
+    const dt = document.createElement('span'); dt.textContent = it.lastChecked ? new Date(it.lastChecked).toLocaleDateString(lang) : '';
+    meta.append(low, dt);
+
+    const acts = document.createElement('div'); acts.className = 'acts';
+    const bOpen = document.createElement('button'); bOpen.className = 'btn primary'; bOpen.textContent = L.open;
+    bOpen.onclick = () => window.mbRadar.openUrl(it.url);
+    const bDel = document.createElement('button'); bDel.className = 'btn danger'; bDel.textContent = L.del;
+    bDel.onclick = async () => { await window.mbRadar.del(it.id); load(); };
+    acts.append(bOpen, bDel);
+
+    card.append(top, sparkSvg(it.history), meta, acts);
+    box.append(card);
+  }
+}
+
+document.getElementById('watchBtn').onclick = async () => { await window.mbRadar.watch(); load(); };
+document.getElementById('checkBtn').onclick = async () => {
+  const btn = document.getElementById('checkBtn'), st = document.getElementById('status');
+  btn.disabled = true; st.textContent = L.checking;
+  try {
+    const r = await window.mbRadar.checkAll();
+    st.textContent = L.checked(r.checked || 0, r.drops || 0);
+    await load();
+  } finally { btn.disabled = false; }
+};
+window.mbRadar.onChanged(load);
+load();
+</script>
+</body>
+</html>

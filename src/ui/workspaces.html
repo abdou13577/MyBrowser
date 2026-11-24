@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Workspaces</title>
+<style>
+  :root { --void:#090A16; --card:#11132A; --ink:#EEF0FF; --mist:#A3A8C8; --line:rgba(255,255,255,.10); --iris:#8B7CFF; --azure:#4F8CFF; --aqua:#2EE6D6; --ai:linear-gradient(120deg,var(--iris),var(--azure) 55%,var(--aqua)); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--void); color: var(--ink); font: 14px/1.5 "Segoe UI Variable Text","Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  body { padding: 24px; max-width: 960px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 24px; background: var(--ai); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--mist); font-size: 13px; margin: 4px 0 0; }
+  .creator { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  input[type=text] { flex: 1; min-width: 200px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--ink); padding: 0 12px; font: inherit; outline: none; }
+  input[type=text]:focus { border-color: var(--azure); }
+  .colors { display: flex; gap: 7px; }
+  .colors i { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .colors i.on { border-color: #fff; }
+  .btn { height: 38px; padding: 0 16px; border-radius: 10px; border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+  .btn.primary { background: var(--ai); color: #090A16; }
+  .btn.soft { background: rgba(255,255,255,.08); color: var(--ink); border: 1px solid var(--line); }
+  .btn.soft:hover { background: rgba(255,255,255,.14); }
+  .btn.danger { background: rgba(224,70,106,.16); color: #ff8aa4; border: 1px solid rgba(224,70,106,.35); }
+  .chk { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--mist); cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--c, #7c9cff); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .card-h b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge { font-size: 11.5px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.08); color: var(--mist); white-space: nowrap; }
+  .tabs { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; }
+  .tab { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,.035); font-size: 12.5px; }
+  .tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mist); }
+  .tab button { border: 0; background: transparent; color: var(--mist); cursor: pointer; font-size: 11px; padding: 2px 5px; border-radius: 5px; }
+  .tab button:hover { background: rgba(224,70,106,.25); color: #fff; }
+  .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+  .acts .btn { height: 32px; padding: 0 12px; font-size: 12.5px; }
+  .empty { text-align: center; padding: 48px 20px; color: var(--mist); border: 1px dashed var(--line); border-radius: 16px; }
+  #msg { font-size: 12.5px; color: var(--aqua); min-height: 18px; }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 id="hTitle"></h1>
+      <p class="sub" id="hSub"></p>
+    </div>
+    <span class="badge" id="openBadge"></span>
+  </header>
+
+  <section class="creator">
+    <div class="row">
+      <input type="text" id="wsName" maxlength="48">
+      <div class="colors" id="colors"></div>
+      <button class="btn primary" id="saveBtn"></button>
+    </div>
+    <div class="row">
+      <label class="chk"><input type="checkbox" id="closeAfter"><span id="closeLbl"></span></label>
+      <span id="msg"></span>
+    </div>
+  </section>
+
+  <div id="list" class="grid"></div>
+
+<script>
+const COLORS = ['#7c9cff', '#8B7CFF', '#4dd0e1', '#3ecf8e', '#ffd166', '#ff9f5a', '#ff6b7e', '#e07cff'];
+const STR = {
+  ar: { title: 'مساحات العمل', sub: 'احفظ تبويبات مشروعك وأغلقها لتوفير الذاكرة، ثم استعدها بنقرة واحدة', ph: 'اسم المساحة (مثلاً: التسويق، المتجر، الدراسة…)', save: 'حفظ التبويبات الحالية', closeAfter: 'إغلاق التبويبات بعد الحفظ لتوفير الذاكرة', open: 'فتح', replace: 'فتح واستبدال', del: 'حذف', tabs: (n) => n + ' تبويب', openNow: (n) => 'التبويبات المفتوحة الآن: ' + n, empty: 'لا توجد مساحات عمل محفوظة بعد. احفظ تبويباتك الحالية بالأعلى!', noTabs: 'لا توجد مواقع مفتوحة لحفظها', saved: 'تم حفظ مساحة العمل!' },
+  en: { title: 'Workspaces', sub: 'Save your project tabs and close them to free RAM, then restore in one click', ph: 'Workspace name (e.g. Marketing, Store, Study…)', save: 'Save current tabs', closeAfter: 'Close tabs after saving to free memory', open: 'Open', replace: 'Open & replace', del: 'Delete', tabs: (n) => n + ' tabs', openNow: (n) => 'Open tabs now: ' + n, empty: 'No saved workspaces yet. Save your current tabs above!', noTabs: 'No open web tabs to save', saved: 'Workspace saved!' },
+  de: { title: 'Arbeitsbereiche', sub: 'Speichere Projekt-Tabs, schließe sie für mehr RAM und öffne sie mit einem Klick', ph: 'Name (z.B. Arbeit, Shop, Studium…)', save: 'Aktuelle Tabs speichern', closeAfter: 'Tabs nach dem Speichern schließen', open: 'Öffnen', replace: 'Ersetzen', del: 'Löschen', tabs: (n) => n + ' Tabs', openNow: (n) => 'Offene Tabs: ' + n, empty: 'Noch keine Arbeitsbereiche gespeichert.', noTabs: 'Keine offenen Webseiten-Tabs', saved: 'Gespeichert!' },
+  fr: { title: 'Espaces de travail', sub: 'Enregistrez vos onglets de projet et restaurez-les en un clic', ph: 'Nom de l’espace…', save: 'Enregistrer les onglets', closeAfter: 'Fermer les onglets après enregistrement', open: 'Ouvrir', replace: 'Remplacer', del: 'Supprimer', tabs: (n) => n + ' onglets', openNow: (n) => 'Onglets ouverts : ' + n, empty: 'Aucun espace enregistré.', noTabs: 'Aucun onglet web ouvert', saved: 'Enregistré !' },
+  es: { title: 'Espacios de trabajo', sub: 'Guarda tus pestañas por proyecto y ábrelas en un clic', ph: 'Nombre del espacio…', save: 'Guardar pestañas', closeAfter: 'Cerrar pestañas tras guardar', open: 'Abrir', replace: 'Reemplazar', del: 'Eliminar', tabs: (n) => n + ' pestañas', openNow: (n) => 'Pestañas abiertas: ' + n, empty: 'Sin espacios guardados aún.', noTabs: 'No hay pestañas web abiertas', saved: '¡Guardado!' },
+  it: { title: 'Spazi di lavoro', sub: 'Salva le schede per progetto e riaprile con un clic', ph: 'Nome spazio…', save: 'Salva schede', closeAfter: 'Chiudi schede dopo il salvataggio', open: 'Apri', replace: 'Sostituisci', del: 'Elimina', tabs: (n) => n + ' schede', openNow: (n) => 'Schede aperte: ' + n, empty: 'Nessuno spazio salvato.', noTabs: 'Nessuna scheda web aperta', saved: 'Salvato!' },
+  tr: { title: 'Çalışma Alanları', sub: 'Proje sekmelerini kaydet, belleği boşalt ve tek tıkla geri aç', ph: 'Alan adı…', save: 'Açık sekmeleri kaydet', closeAfter: 'Kaydettikten sonra sekmeleri kapat', open: 'Aç', replace: 'Değiştir', del: 'Sil', tabs: (n) => n + ' sekme', openNow: (n) => 'Açık sekmeler: ' + n, empty: 'Henüz kayıtlı alan yok.', noTabs: 'Kaydedilecek web sekmesi yok', saved: 'Kaydedildi!' }
+};
+const lang = (new URLSearchParams(location.search).get('lang') || 'ar').slice(0, 2);
+const L = STR[lang] || STR.en;
+document.documentElement.lang = lang;
+document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+document.title = L.title;
+document.getElementById('hTitle').textContent = L.title;
+document.getElementById('hSub').textContent = L.sub;
+document.getElementById('wsName').placeholder = L.ph;
+document.getElementById('saveBtn').textContent = L.save;
+document.getElementById('closeLbl').textContent = L.closeAfter;
+
+let selColor = COLORS[0];
+const cBox = document.getElementById('colors');
+COLORS.forEach((c, idx) => {
+  const i = document.createElement('i');
+  i.style.background = c;
+  if (idx === 0) i.className = 'on';
+  i.onclick = () => { selColor = c; cBox.querySelectorAll('i').forEach(x => x.className = ''); i.className = 'on'; };
+  cBox.append(i);
+});
+
+async function load() {
+  const { workspaces, openCount } = await window.mbWorkspaces.list();
+  document.getElementById('openBadge').textContent = L.openNow(openCount);
+  const box = document.getElementById('list');
+  box.innerHTML = '';
+  if (!workspaces.length) {
+    box.className = '';
+    const d = document.createElement('div'); d.className = 'empty'; d.textContent = L.empty;
+    box.append(d); return;
+  }
+  box.className = 'grid';
+  for (const ws of workspaces) {
+    const card = document.createElement('div'); card.className = 'card';
+    card.style.setProperty('--c', ws.color || '#7c9cff');
+    const h = document.createElement('div'); h.className = 'card-h';
+    const b = document.createElement('b'); b.textContent = ws.name;
+    const bg = document.createElement('span'); bg.className = 'badge'; bg.textContent = L.tabs((ws.tabs || []).length);
+    h.append(b, bg);
+    const tabs = document.createElement('div'); tabs.className = 'tabs';
+    for (const t of (ws.tabs || [])) {
+      const row = document.createElement('div'); row.className = 'tab';
+      const s = document.createElement('span'); s.textContent = t.title || t.url; s.title = t.url;
+      const x = document.createElement('button'); x.textContent = '✕';
+      x.onclick = async () => { await window.mbWorkspaces.removeTab(ws.id, t.url); load(); };
+      row.append(s, x); tabs.append(row);
+    }
+    const acts = document.createElement('div'); acts.className = 'acts';
+    const bOpen = document.createElement('button'); bOpen.className = 'btn primary'; bOpen.textContent = L.open;
+    bOpen.onclick = () => window.mbWorkspaces.open(ws.id, false);
+    const bRep = document.createElement('button'); bRep.className = 'btn soft'; bRep.textContent = L.replace;
+    bRep.onclick = () => window.mbWorkspaces.open(ws.id, true);
+    const bDel = document.createElement('button'); bDel.className = 'btn danger'; bDel.textContent = L.del;
+    bDel.onclick = async () => { await window.mbWorkspaces.del(ws.id); load(); };
+    acts.append(bOpen, bRep, bDel);
+    card.append(h, tabs, acts);
+    box.append(card);
+  }
+}
+
+document.getElementById('saveBtn').onclick = async () => {
+  const name = document.getElementById('wsName').value.trim();
+  const closeAfter = document.getElementById('closeAfter').checked;
+  const r = await window.mbWorkspaces.saveCurrent({ name, color: selColor, closeAfter });
+  const msg = document.getElementById('msg');
+  if (!r || !r.ok) { msg.textContent = L.noTabs; return; }
+  document.getElementById('wsName').value = '';
+  msg.textContent = L.saved;
+  setTimeout(() => { msg.textContent = ''; }, 2000);
+  load();
+};
+load();
+</script>
+</body>
+</html>

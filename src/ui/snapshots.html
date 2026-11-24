@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Offline Snapshots</title>
+<style>
+  :root { --void:#090A16; --card:#11132A; --ink:#EEF0FF; --mist:#A3A8C8; --line:rgba(255,255,255,.10); --iris:#8B7CFF; --azure:#4F8CFF; --aqua:#2EE6D6; --ai:linear-gradient(120deg,var(--iris),var(--azure) 55%,var(--aqua)); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--void); color: var(--ink); font: 14px/1.6 "Segoe UI Variable Text","Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  .shell { display: grid; grid-template-columns: 340px 1fr; height: 100vh; }
+  @media (max-width: 760px) { .shell { grid-template-columns: 1fr; } .reader { display: none; } .reader.show { display: block; position: fixed; inset: 0; z-index: 10; } }
+  .side { border-inline-end: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; background: #0C0E20; }
+  .top { padding: 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .top-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  h1 { margin: 0; font-size: 19px; background: var(--ai); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .btn { height: 34px; padding: 0 12px; border-radius: 10px; border: 0; cursor: pointer; font: inherit; font-weight: 600; font-size: 12.5px; }
+  .btn.primary { background: var(--ai); color: #090A16; }
+  .btn.soft { background: rgba(255,255,255,.08); color: var(--ink); border: 1px solid var(--line); }
+  .btn.danger { background: rgba(224,70,106,.16); color: #ff8aa4; border: 1px solid rgba(224,70,106,.35); }
+  .search { width: 100%; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--ink); padding: 0 12px; font: inherit; outline: none; }
+  .search:focus { border-color: var(--azure); }
+  .list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .item { padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.03); cursor: pointer; transition: background .12s, border-color .12s; }
+  .item:hover { background: rgba(255,255,255,.07); }
+  .item.on { border-color: var(--iris); background: rgba(139,124,255,.12); }
+  .item b { display: block; font-size: 13.5px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .meta { font-size: 11.5px; color: var(--aqua); margin-bottom: 4px; }
+  .item .ex { font-size: 12px; color: var(--mist); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .reader { overflow-y: auto; padding: 28px 36px; background: var(--void); }
+  .r-inner { max-width: 740px; margin: 0 auto; }
+  .r-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .r-title { font-size: 24px; line-height: 1.35; margin: 0 0 8px; }
+  .r-url { font-size: 12.5px; color: var(--azure); word-break: break-all; margin-bottom: 18px; display: block; }
+  .r-body h1, .r-body h2, .r-body h3, .r-body h4 { margin: 20px 0 8px; color: #fff; }
+  .r-body p, .r-body li { font-size: 15.5px; line-height: 1.8; color: #DCE0F7; margin: 0 0 12px; }
+  .r-body blockquote { border-inline-start: 3px solid var(--iris); padding-inline-start: 14px; color: var(--mist); margin: 14px 0; }
+  .r-body pre { background: #141732; padding: 12px; border-radius: 10px; overflow-x: auto; font-size: 13px; direction: ltr; }
+  .empty { text-align: center; padding: 48px 18px; color: var(--mist); }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="top">
+        <div class="top-h">
+          <h1 id="hTitle"></h1>
+          <button class="btn primary" id="capBtn"></button>
+        </div>
+        <input class="search" id="q" type="search">
+      </div>
+      <div class="list" id="list"></div>
+    </aside>
+    <main class="reader" id="reader">
+      <div class="r-inner" id="rInner"><div class="empty" id="rEmpty"></div></div>
+    </main>
+  </div>
+
+<script>
+const STR = {
+  ar: { title: 'الذاكرة بدون إنترنت', cap: '+ حفظ الصفحة الحالية', search: 'ابحث داخل الصفحات والنصوص المحفوظة…', empty: 'لا توجد صفحات محفوظة بعد. اضغط «+ حفظ الصفحة الحالية» أو Ctrl+Shift+M من أي موقع!', pick: 'اختر صفحة من القائمة لقراءتها بدون إنترنت', open: 'فتح الرابط الأصلي', exp: 'تصدير HTML', del: 'حذف' },
+  en: { title: 'Offline Memory', cap: '+ Save current page', search: 'Search inside saved pages & text…', empty: 'No snapshots yet. Click "+ Save current page" or press Ctrl+Shift+M on any site!', pick: 'Select a saved page to read offline', open: 'Open original URL', exp: 'Export HTML', del: 'Delete' },
+  de: { title: 'Offline-Speicher', cap: '+ Aktuelle Seite', search: 'In gespeicherten Seiten & Texten suchen…', empty: 'Noch keine Seiten gespeichert. Drücke Ctrl+Shift+M!', pick: 'Wähle eine Seite zum Offline-Lesen', open: 'Original öffnen', exp: 'HTML exportieren', del: 'Löschen' },
+  fr: { title: 'Mémoire hors ligne', cap: '+ Enregistrer la page', search: 'Rechercher dans les pages enregistrées…', empty: 'Aucune page enregistrée. Utilisez Ctrl+Shift+M !', pick: 'Sélectionnez une page pour lire hors ligne', open: 'Ouvrir l’original', exp: 'Exporter HTML', del: 'Supprimer' },
+  es: { title: 'Memoria sin conexión', cap: '+ Guardar página', search: 'Buscar dentro de páginas guardadas…', empty: 'Aún no hay páginas guardadas. ¡Usa Ctrl+Shift+M!', pick: 'Elige una página para leer sin conexión', open: 'Abrir original', exp: 'Exportar HTML', del: 'Eliminar' },
+  it: { title: 'Memoria offline', cap: '+ Salva pagina', search: 'Cerca nelle pagine salvate…', empty: 'Nessuna pagina salvata. Usa Ctrl+Shift+M!', pick: 'Scegli una pagina da leggere offline', open: 'Apri originale', exp: 'Esporta HTML', del: 'Elimina' },
+  tr: { title: 'Çevrimdışı Hafıza', cap: '+ Sayfayı kaydet', search: 'Kayıtlı sayfalarda ara…', empty: 'Henüz kayıtlı sayfa yok. Ctrl+Shift+M kullanın!', pick: 'Çevrimdışı okumak için bir sayfa seçin', open: 'Orijinali aç', exp: 'HTML dışa aktar', del: 'Sil' }
+};
+const lang = (new URLSearchParams(location.search).get('lang') || 'ar').slice(0, 2);
+const L = STR[lang] || STR.en;
+document.documentElement.lang = lang;
+document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+document.title = L.title;
+document.getElementById('hTitle').textContent = L.title;
+document.getElementById('capBtn').textContent = L.cap;
+document.getElementById('q').placeholder = L.search;
+document.getElementById('rEmpty').textContent = L.pick;
+
+let activeId = null, timer = null;
+
+async function openSnap(id) {
+  activeId = id;
+  document.querySelectorAll('.item').forEach(el => el.classList.toggle('on', el.dataset.id === id));
+  const item = await window.mbSnaps.get(id);
+  const box = document.getElementById('rInner');
+  box.innerHTML = '';
+  if (!item) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = L.pick; box.append(d); return; }
+
+  const bar = document.createElement('div'); bar.className = 'r-bar';
+  const bOpen = document.createElement('button'); bOpen.className = 'btn soft'; bOpen.textContent = L.open;
+  bOpen.onclick = () => window.mbSnaps.openUrl(item.url);
+  const bExp = document.createElement('button'); bExp.className = 'btn soft'; bExp.textContent = L.exp;
+  bExp.onclick = () => window.mbSnaps.exportHtml(item.id);
+  const bDel = document.createElement('button'); bDel.className = 'btn danger'; bDel.textContent = L.del;
+  bDel.onclick = async () => { await window.mbSnaps.del(item.id); activeId = null; load(); openSnap(null); };
+  bar.append(bOpen, bExp, bDel);
+
+  const h = document.createElement('h2'); h.className = 'r-title'; h.textContent = item.title;
+  const u = document.createElement('span'); u.className = 'r-url'; u.textContent = item.url;
+  const body = document.createElement('div'); body.className = 'r-body';
+  const allowed = new Set(['h1', 'h2', 'h3', 'h4', 'p', 'li', 'blockquote', 'pre']);
+  const blocks = (item.blocks && item.blocks.length) ? item.blocks : [{ tag: 'p', text: item.plain || '' }];
+  for (const b of blocks) {
+    const tag = allowed.has(b.tag) ? b.tag : 'p';
+    const el = document.createElement(tag);
+    el.textContent = b.text;
+    body.append(el);
+  }
+  box.append(bar, h, u, body);
+}
+
+async function load() {
+  const q = document.getElementById('q').value;
+  const list = await window.mbSnaps.list(q);
+  const box = document.getElementById('list');
+  box.innerHTML = '';
+  if (!list.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = L.empty; box.append(d); return; }
+  for (const s of list) {
+    const el = document.createElement('div'); el.className = 'item' + (s.id === activeId ? ' on' : ''); el.dataset.id = s.id;
+    const b = document.createElement('b'); b.textContent = s.title;
+    const m = document.createElement('div'); m.className = 'meta'; m.textContent = `${s.domain || ''} · ${new Date(s.savedAt).toLocaleDateString(lang)}`;
+    const ex = document.createElement('div'); ex.className = 'ex'; ex.textContent = s.excerpt || '';
+    el.append(b, m, ex);
+    el.onclick = () => openSnap(s.id);
+    box.append(el);
+  }
+}
+
+document.getElementById('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(load, 200); });
+document.getElementById('capBtn').onclick = async () => { const r = await window.mbSnaps.capture(); if (r && r.ok) { await load(); openSnap(r.id); } };
+window.mbSnaps.onChanged(load);
+load();
+</script>
+</body>
+</html>

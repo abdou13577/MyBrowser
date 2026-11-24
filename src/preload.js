@@ -113,10 +113,22 @@ contextBridge.exposeInMainWorld('browser', {
   onVideoTabChanged: on('video-tab-changed')
 });
 
-// جسر إضافات الحسابات (لون النافذة، تبديل الحساب، صفحات البدء)
+// جسر إضافات الحسابات والأدوات المتقدمة
 contextBridge.exposeInMainWorld('mbExtras', {
   setColor: (c) => ipcRenderer.invoke('extras:setColor', c),
   setPages: (t) => ipcRenderer.invoke('extras:setPages', t),
   currentUrl: () => ipcRenderer.invoke('extras:currentUrl'),
-  chooser: () => ipcRenderer.invoke('extras:chooser')
+  chooser: () => ipcRenderer.invoke('extras:chooser'),
+  copyClean: () => ipcRenderer.invoke('cleanlink:copy'),
+  bossToggle: () => ipcRenderer.invoke('boss:toggle'),
+  splitToggle: (u) => ipcRenderer.invoke('split:toggle', u),
+  splitGo: (u) => ipcRenderer.invoke('split:go', u),
+  splitNav: (a) => ipcRenderer.invoke('split:nav', a),
+  splitRatio: () => ipcRenderer.invoke('split:ratio'),
+  splitSwap: () => ipcRenderer.invoke('split:swap'),
+  openWorkspaces: () => ipcRenderer.invoke('ws:openPanel'),
+  snapCapture: () => ipcRenderer.invoke('snaps:capture'),
+  openSnapshots: () => ipcRenderer.invoke('snaps:openPanel'),
+  radarWatch: () => ipcRenderer.invoke('radar:watch'),
+  openRadar: () => ipcRenderer.invoke('radar:openPanel')
 });

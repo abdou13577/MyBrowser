@@ -30,3 +30,30 @@ contextBridge.exposeInMainWorld('mbBackup', {
   export: () => ipcRenderer.invoke('backup:export'),
   import: () => ipcRenderer.invoke('backup:import')
 });
+
+contextBridge.exposeInMainWorld('mbWorkspaces', {
+  list: () => ipcRenderer.invoke('ws:list'),
+  saveCurrent: (d) => ipcRenderer.invoke('ws:saveCurrent', d),
+  open: (id, replace) => ipcRenderer.invoke('ws:open', { id, replace }),
+  del: (id) => ipcRenderer.invoke('ws:delete', id),
+  removeTab: (id, url) => ipcRenderer.invoke('ws:removeTab', { id, url })
+});
+
+contextBridge.exposeInMainWorld('mbSnaps', {
+  list: (q) => ipcRenderer.invoke('snaps:list', q),
+  get: (id) => ipcRenderer.invoke('snaps:get', id),
+  capture: () => ipcRenderer.invoke('snaps:capture'),
+  del: (id) => ipcRenderer.invoke('snaps:delete', id),
+  openUrl: (u) => ipcRenderer.send('snaps:openUrl', u),
+  exportHtml: (id) => ipcRenderer.invoke('snaps:export', id),
+  onChanged: (cb) => ipcRenderer.on('snaps:changed', () => cb())
+});
+
+contextBridge.exposeInMainWorld('mbRadar', {
+  list: () => ipcRenderer.invoke('radar:list'),
+  watch: () => ipcRenderer.invoke('radar:watch'),
+  checkAll: () => ipcRenderer.invoke('radar:checkAll'),
+  del: (id) => ipcRenderer.invoke('radar:delete', id),
+  openUrl: (u) => ipcRenderer.send('radar:openUrl', u),
+  onChanged: (cb) => ipcRenderer.on('radar:changed', () => cb())
+});
