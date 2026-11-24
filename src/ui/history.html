@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#090A16; --panel:#121530; --field:#191d3d; --line:#272c55; --ink:#eef0ff; --dim:#9aa0d0; --accent:#8B7CFF; --accent2:#4dd0e1; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: "Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  body { display: flex; flex-direction: column; }
+  header { padding: 20px 26px 14px; border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 12px; font-size: 21px; font-weight: 800; letter-spacing: .2px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  #q { flex: 1; height: 40px; border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 10px; padding: 0 14px; font-size: 14px; outline: none; }
+  #q:focus { border-color: var(--accent); }
+  .btn { height: 40px; padding: 0 16px; border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 10px; cursor: pointer; font-size: 13.5px; white-space: nowrap; }
+  .btn:hover { border-color: var(--accent); }
+  .btn.danger:hover { border-color: #ff6b7e; color: #ff9aa7; }
+  main { flex: 1; overflow: auto; padding: 8px 18px 40px; }
+  .day { margin: 18px 8px 8px; font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--accent2); }
+  .item { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 10px; cursor: default; }
+  .item:hover { background: var(--panel); }
+  .fav { width: 18px; height: 18px; flex: none; border-radius: 4px; background: #222 center/cover no-repeat; }
+  .time { color: var(--dim); font-size: 12px; width: 62px; flex: none; font-variant-numeric: tabular-nums; }
+  .link { flex: 1; min-width: 0; cursor: pointer; }
+  .link .t { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .link .u { font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .x { opacity: 0; border: none; background: none; color: var(--dim); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .item:hover .x { opacity: 1; }
+  .x:hover { color: #ff9aa7; background: #2a1420; }
+  .empty { text-align: center; color: var(--dim); margin-top: 80px; font-size: 15px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1 id="title"></h1>
+    <div class="row">
+      <input id="q" autocomplete="off">
+      <button class="btn danger" id="clear"></button>
+    </div>
+  </header>
+  <main id="list"></main>
+<script>
+  const code = (new URLSearchParams(location.search).get('lang') || 'en').slice(0, 2);
+  const RTL = code === 'ar';
+  const T = ({
+    ar: { title: 'سجلّ التصفّح', ph: 'ابحث في السجل…', clear: 'مسح السجل', empty: 'لا توجد صفحات في السجل', today: 'اليوم', yday: 'أمس', confirm: 'مسح كل سجل التصفّح؟' },
+    en: { title: 'History', ph: 'Search history…', clear: 'Clear history', empty: 'No pages in history', today: 'Today', yday: 'Yesterday', confirm: 'Clear all browsing history?' },
+    de: { title: 'Verlauf', ph: 'Verlauf durchsuchen…', clear: 'Verlauf löschen', empty: 'Keine Seiten im Verlauf', today: 'Heute', yday: 'Gestern', confirm: 'Gesamten Verlauf löschen?' },
+    fr: { title: 'Historique', ph: 'Rechercher…', clear: "Effacer l'historique", empty: 'Aucune page', today: "Aujourd'hui", yday: 'Hier', confirm: "Effacer tout l'historique ?" },
+    es: { title: 'Historial', ph: 'Buscar en el historial…', clear: 'Borrar historial', empty: 'No hay páginas', today: 'Hoy', yday: 'Ayer', confirm: '¿Borrar todo el historial?' },
+    it: { title: 'Cronologia', ph: 'Cerca nella cronologia…', clear: 'Cancella cronologia', empty: 'Nessuna pagina', today: 'Oggi', yday: 'Ieri', confirm: 'Cancellare tutta la cronologia?' },
+    tr: { title: 'Geçmiş', ph: 'Geçmişte ara…', clear: 'Geçmişi temizle', empty: 'Sayfa yok', today: 'Bugün', yday: 'Dün', confirm: 'Tüm geçmiş temizlensin mi?' }
+  })[code] || null;
+  const L = T || ({ title: 'History', ph: 'Search…', clear: 'Clear history', empty: 'No pages', today: 'Today', yday: 'Yesterday', confirm: 'Clear all history?' });
+  document.documentElement.dir = RTL ? 'rtl' : 'ltr';
+  document.getElementById('title').textContent = L.title;
+  document.getElementById('q').placeholder = L.ph;
+  document.getElementById('clear').textContent = L.clear;
+  const list = document.getElementById('list'), q = document.getElementById('q');
+  const loc = { ar: 'ar', en: 'en', de: 'de', fr: 'fr', es: 'es', it: 'it', tr: 'tr' }[code] || 'en';
+  const fmtTime = (ts) => new Date(ts).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+  function dayLabel(ts) {
+    const d = new Date(ts), now = new Date();
+    const same = (a, b) => a.toDateString() === b.toDateString();
+    if (same(d, now)) return L.today;
+    const y = new Date(now); y.setDate(now.getDate() - 1);
+    if (same(d, y)) return L.yday;
+    return d.toLocaleDateString(loc, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  const favFor = (u) => { try { return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(new URL(u).hostname) + '&sz=32'; } catch { return ''; } };
+  async function render() {
+    const items = await window.mbHistory.list({ query: q.value, limit: 1000 });
+    list.innerHTML = '';
+    if (!items.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = L.empty; list.append(e); return; }
+    let curDay = '';
+    for (const it of items) {
+      const dl = dayLabel(it.ts);
+      if (dl !== curDay) { curDay = dl; const h = document.createElement('div'); h.className = 'day'; h.textContent = dl; list.append(h); }
+      const row = document.createElement('div'); row.className = 'item';
+      const fav = document.createElement('div'); fav.className = 'fav'; const f = favFor(it.u); if (f) fav.style.backgroundImage = `url("${f}")`;
+      const time = document.createElement('div'); time.className = 'time'; time.textContent = fmtTime(it.ts);
+      const link = document.createElement('div'); link.className = 'link';
+      const t = document.createElement('div'); t.className = 't'; t.textContent = it.t || it.u;
+      const u = document.createElement('div'); u.className = 'u'; u.textContent = it.u;
+      link.append(t, u); link.title = it.u;
+      link.onclick = () => window.mbHistory.open(it.u);
+      const x = document.createElement('button'); x.className = 'x'; x.textContent = '✕';
+      x.onclick = async (ev) => { ev.stopPropagation(); await window.mbHistory.del(it.ts); render(); };
+      row.append(fav, time, link, x); list.append(row);
+    }
+  }
+  let deb; q.addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(render, 150); });
+  document.getElementById('clear').onclick = async () => { if (confirm(L.confirm)) { await window.mbHistory.clear(); render(); } };
+  window.mbHistory.onChanged(() => { if (!q.value) render(); });
+  render();
+</script>
+</body>
+</html>
