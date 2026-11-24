@@ -9,6 +9,9 @@ document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L[el.d
 
 document.getElementById('appsLbl').textContent = ({ ar: 'التطبيقات', en: 'Apps', de: 'Apps', it: 'App', fr: 'Applications', es: 'Apps', tr: 'Uygulamalar' })[code] || 'Apps';
 document.getElementById('adLbl').textContent = ({ ar: 'استوديو الإعلانات', en: 'Ad Studio', de: 'Werbe-Studio', it: 'Studio Ad', fr: 'Studio Pub', es: 'Estudio de anuncios', tr: 'Reklam Stüdyosu' })[code] || 'Ad Studio';
+document.getElementById('historyLbl').textContent = ({ ar: 'السجل', en: 'History', de: 'Verlauf', it: 'Cronologia', fr: 'Historique', es: 'Historial', tr: 'Geçmiş' })[code] || 'History';
+document.getElementById('downloadsLbl').textContent = ({ ar: 'التنزيلات', en: 'Downloads', de: 'Downloads', it: 'Download', fr: 'Téléchargements', es: 'Descargas', tr: 'İndirilenler' })[code] || 'Downloads';
+document.getElementById('backupLbl').textContent = ({ ar: 'نسخة احتياطية', en: 'Backup', de: 'Sicherung', it: 'Backup', fr: 'Sauvegarde', es: 'Copia', tr: 'Yedek' })[code] || 'Backup';
 
 const tick = () => {
   const d = new Date();
