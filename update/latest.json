@@ -1,17 +1,17 @@
 {
-  "version": "3.5.0",
-  "date": "2026-11-24T17:43:56.750Z",
+  "version": "3.5.1",
+  "date": "2026-11-24T17:54:25.724Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "3eae18770a91b6797239dfa06f955ffa1608663c",
+  "ref": "b27c12aff61b732cb604ed4c082f4a0cfc3314ef",
   "notes": {
-    "ar": "الإصدار 3.5.0: إضافة البحث الذكي والإكمال التلقائي الفوري في شريط العنوان (مثل Google Chrome) — يعرض تلقائياً أثناء الكتابة اقتراحات Google الحية بالإضافة إلى نتائج السجل والمفضلة والتبويبات المفتوحة مع التنقّل بالأسهم.",
-    "en": "Version 3.5.0: Added Smart Omnibox instant autocomplete in the address bar (like Google Chrome) — shows live Google search suggestions alongside matching History, Bookmarks, and Open Tabs as you type."
+    "ar": "الإصدار 3.5.1: تحسين ذاكرة المحادثة في المساعد الذكي — أصبح يتبع سياق الدردشة بالكامل من البداية، وعندما تطلب منه البحث عن «نفس هذه السيارة» أو «أحضر لي روابط لها» يستخرج الموديل والمواصفات تلقائياً من الرسائل السابقة ويجلب لك روابط البحث المباشرة لها.",
+    "en": "Version 3.5.1: Improved AI chat memory & follow-up search — keeps full multi-turn conversation context (16 turns) and automatically resolves references like \"search for this same car\" from earlier messages to generate exact live search links."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "3fca8014fb227422813d60c670cb27627438e07ef9807d7652f2281e04d6e0e3",
+      "sha256": "6d0ee915f22c31c4c8ba11ab585065f98242b32d1e81212554f1521cde1bd0cb",
       "size": 1334
     },
     {
@@ -116,8 +116,8 @@
     },
     {
       "path": "src/features/freellm.js",
-      "sha256": "347eaa18a45024a498d597550c265887b1f42c91d17db701b420dc55d7708357",
-      "size": 27992
+      "sha256": "b53088c4a0b920d0a2eec6eb9b1480c990caeb95cba75aeb05a8d1ae58481918",
+      "size": 30166
     },
     {
       "path": "src/features/history.js",
