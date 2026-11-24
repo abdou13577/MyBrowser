@@ -1,17 +1,17 @@
 {
-  "version": "3.0.0",
-  "date": "2026-11-24T14:27:46.150Z",
+  "version": "3.1.0",
+  "date": "2026-11-24T15:03:41.770Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "a6eb37a16a7031e3a690cfb6d87291aab8b828d4",
+  "ref": "9b8a3d1274a67b61e9552022883936023b3edd54",
   "notes": {
-    "ar": "الإصدار 3.0.0: مراقب الأسعار التلقائي في الخلفية، الذاكرة بدون إنترنت مع البحث النصي، مساحات العمل بنقرة واحدة، منظّف الروابط والتتبع الذكي (Ctrl+Shift+C)، الشاشة المقسومة الحقيقية (Ctrl+Shift+S)، ووضع الخصوصية الفوري (F9 / Ctrl+Shift+B).",
-    "en": "Version 3.0.0: Background Price Drop Radar, Offline Page Snapshots with full-text search, One-Click Workspaces, Smart Clean Copy Link (Ctrl+Shift+C), true Split View (Ctrl+Shift+S), and Quick Privacy Boss Key (F9 / Ctrl+Shift+B)."
+    "ar": "الإصدار 3.1.0: حارس تلقائي صامت للرام والمعالج وتنظيف الكاش مع تنويم ذكي للتبويبات الخلفية، حاجب لافتات الكوكيز المزعجة، شريط الأوامر السريع (Ctrl+K)، المحوّل الفوري للعملات والوحدات عند التحديد، الحافظة السريعة المؤقتة (Ctrl+Shift+V)، ومؤقّت الانضباط وكابح التشتّت.",
+    "en": "Version 3.1.0: Silent automatic RAM/CPU/disk cache guard with smart background tab sleeping, Cookie banner killer, Command Palette (Ctrl+K), instant currency & unit selection converter, RAM-only Clipboard Vault (Ctrl+Shift+V), and Site Time Budget Focus Guard."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "f181d4c4e44f8f82514c8b78aa00cda894f864ed9d84d31a47156296af285bea",
+      "sha256": "547c4dae3f592101383cc4cf717f0a34fcd279427370f0d99b543cdecc97dc82",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "11837fbbca736474e6c0d5d7fe303d220292271e1eacb462da64fc7b6967c34c",
-      "size": 5324
+      "sha256": "571097a89eb0b74941a775c19c29b0ae2f920dc58fce10ab66d895a382e41d54",
+      "size": 5872
     },
     {
       "path": "src/features/apps.js",
@@ -70,6 +70,21 @@
       "size": 5644
     },
     {
+      "path": "src/features/clipvault.js",
+      "sha256": "7103f9723d35288a23db1a3a584a950a6cd51115913fb4b53cec8f5cded7ce7b",
+      "size": 8217
+    },
+    {
+      "path": "src/features/cmdpalette.js",
+      "sha256": "75da19b4451c7bed1b153b9f48a869b95664cd9510e6e68eb83612e06f7faad3",
+      "size": 11840
+    },
+    {
+      "path": "src/features/cookiekiller.js",
+      "sha256": "0f84a3e111c61b002e73dd511be45dd34a722d305f479f2a14e9e50a2bd62d90",
+      "size": 2609
+    },
+    {
       "path": "src/features/downloads.js",
       "sha256": "4e651e4428b8fa2b881f03a1033492cf37f177a969ad31f1a74691ec12999208",
       "size": 6252
@@ -90,6 +105,11 @@
       "size": 5171
     },
     {
+      "path": "src/features/focusguard.js",
+      "sha256": "8cde4d2d23b8ee1e8b46722957e5e86c8eeb96e17de6eb49f4cc4cbf9ae8bd07",
+      "size": 7209
+    },
+    {
       "path": "src/features/history.js",
       "sha256": "7f34a7aa1ab98f7f25f7004aafc1c634e00ee9e5321060082619a7f9a847454e",
       "size": 5685
@@ -98,6 +118,11 @@
       "path": "src/features/notes.js",
       "sha256": "4a03a020c6800d7a2ae33106a43c47c7d5a7b1ccef23d8ee1636024f1448aed2",
       "size": 4017
+    },
+    {
+      "path": "src/features/perfguard.js",
+      "sha256": "540308a13b52aab5f643d31132f4a8d76fbeaa7e82fc677407a77a12f707e91f",
+      "size": 4934
     },
     {
       "path": "src/features/pipfix.js",
@@ -113,6 +138,11 @@
       "path": "src/features/recent.js",
       "sha256": "034c2d62cb6431120f50493804cea3b99800514eeb9b77281ff7e0bd1c3703b4",
       "size": 3164
+    },
+    {
+      "path": "src/features/smartselect.js",
+      "sha256": "611fd3180dba0f4ebdd65ec3f584b4f7f1f51b18a46a511e7b11308402f18217",
+      "size": 6007
     },
     {
       "path": "src/features/snapshots.js",
@@ -141,13 +171,13 @@
     },
     {
       "path": "src/panels-preload.js",
-      "sha256": "09c23f4fbe2db23f3abe31bbb71e97d2cb9984f7b5dcc3017c86df13594faece",
-      "size": 2632
+      "sha256": "11cb7ddff6a433130d1e92c16847568f6994a8c6a27d41009db83248b2895fb3",
+      "size": 2875
     },
     {
       "path": "src/preload.js",
-      "sha256": "7679f578aa8dbba3993314fc515a45dc5c8df98e85bc3401daa2248d975a93bc",
-      "size": 6662
+      "sha256": "15ba74675cd516fb77a4450045bffcbf3b01e714416a1bacff539be824dbe30d",
+      "size": 6927
     },
     {
       "path": "src/ui/backup.html",
@@ -175,6 +205,11 @@
       "size": 4229
     },
     {
+      "path": "src/ui/focusguard.html",
+      "sha256": "87a8b43d41456ae4083ef9386f4feca94c1b02cf922911ac34c4b7067ea1c170",
+      "size": 5623
+    },
+    {
       "path": "src/ui/history.html",
       "sha256": "095c7fd511b1d49f7f662401c13e9589280d8ad5ad2761e76922f3f13a5da3bc",
       "size": 7090
@@ -191,13 +226,13 @@
     },
     {
       "path": "src/ui/start.html",
-      "sha256": "9ce0d3845f35c4078e7d4bafc382d0652e35291db458a975ab9b2c1cbd2ebea3",
-      "size": 9950
+      "sha256": "5fc91ddb7afd6964ff6a8aba0ac82b8d41b309db077ba69a9e9d3760a388915e",
+      "size": 10174
     },
     {
       "path": "src/ui/start.js",
-      "sha256": "0562bc758bb59cd47dd88e6164bd4955ef28a0ee8026e0042780eb9367cb17f4",
-      "size": 5895
+      "sha256": "2593db1284a8f2539ad13456e913a36c4ff16fc2afd04438ba678137ee5a930e",
+      "size": 6092
     },
     {
       "path": "src/ui/workspaces.html",
