@@ -1,17 +1,17 @@
 {
-  "version": "3.2.1",
-  "date": "2026-11-24T16:09:33.525Z",
+  "version": "3.3.0",
+  "date": "2026-11-24T16:19:11.795Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "e94d4c210cf76dce7409757dd625f0f299d666d5",
+  "ref": "027e5a19197dab665b4a9b544bfd84c5af2ba4ce",
   "notes": {
-    "ar": "الإصدار 3.2.1: تشغيل المساعد الذكي تلقائياً وفوراً بدون الحاجة لأي مفتاح (يدعم FreeLLMAPI المحلي + Ollama المحلي تلقائياً، مع استمرار دعم مفتاح Claude إن وُجد).",
-    "en": "Version 3.2.1: Instant zero-setup AI assistant (automatically supports local FreeLLMAPI + local Ollama with no API key required, plus Claude key support)."
+    "ar": "الإصدار 3.3.0: ربط المساعد الذكي بالسحابة المجانية السريعة (رد خلال ثانية بدون مفتاح وبصفر عبء على جهازك) مع دعم FreeLLMAPI وOllama، إضافة زر الميكروفون للإملاء الصوتي بأي لغة داخل خانة المساعد، وتفعيل البحث المباشر في الويب (مثل Kleinanzeigen وmobile.de وغيرها) مع روابط قابلة للنقر تفتح مباشرة في المتصفح.",
+    "en": "Version 3.3.0: Fast keyless free cloud AI (with FreeLLMAPI & local Ollama support), microphone voice-to-text button right inside the AI chat input, and live web search (Kleinanzeigen, mobile.de, Amazon, eBay, etc.) returning direct clickable links."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "1dab811e684a4414ef23022d1d04b85b67fcd42b79e94b74373a3cdd4f00192c",
+      "sha256": "1c7d97222be78465990bc0d2a6d68b52fe445ec284f14603829f624bf9dfaf16",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "3727c58ba5d32e847602864f2a809581147a2e63c2f2f60f7b26dace262428ab",
-      "size": 5957
+      "sha256": "3613b89a3804fe26fb7d25d5ffa23d0fdc140cac85addfcc13e73d7d94e300c3",
+      "size": 6046
     },
     {
       "path": "src/features/apps.js",
@@ -111,8 +111,8 @@
     },
     {
       "path": "src/features/freellm.js",
-      "sha256": "12d95a94ef749032882b55e03672bf66e441958b6da1daabc2342df4a70c2280",
-      "size": 11360
+      "sha256": "d10b12f8c7be4b982caff6827b6df484c70ad948d5400c752c824021cd07528e",
+      "size": 17002
     },
     {
       "path": "src/features/history.js",
@@ -170,6 +170,11 @@
       "size": 8094
     },
     {
+      "path": "src/features/voicechat.js",
+      "sha256": "ffb6632756a996e2afe5d7754dfc7941e52df995c85d412553338ec9c6a2dd23",
+      "size": 7108
+    },
+    {
       "path": "src/features/workspaces.js",
       "sha256": "eefada5e0f8eb86f76446d06039fadda10de027b1980bb5fb9c9ea62a254e823",
       "size": 5963
@@ -181,8 +186,8 @@
     },
     {
       "path": "src/preload.js",
-      "sha256": "15ba74675cd516fb77a4450045bffcbf3b01e714416a1bacff539be824dbe30d",
-      "size": 6927
+      "sha256": "3d0a43764edff4d49edd9b3c9415005a02dfd3b1741bb7d38459d289b934d21a",
+      "size": 6987
     },
     {
       "path": "src/ui/backup.html",
