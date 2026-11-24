@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#090A16; --panel:#121530; --field:#191d3d; --line:#272c55; --ink:#eef0ff; --dim:#9aa0d0; --accent:#8B7CFF; --ok:#3ecf8e; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: "Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  body { padding: 30px 32px; display: flex; flex-direction: column; gap: 18px; }
+  h1 { margin: 0; font-size: 22px; font-weight: 800; }
+  p { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.7; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .card h2 { margin: 0; font-size: 15px; font-weight: 700; }
+  .big { height: 46px; border: 0; border-radius: 11px; font-size: 14.5px; font-weight: 700; cursor: pointer; color: #0b0b16; background: linear-gradient(120deg, var(--accent), #a99bff); }
+  .big.ghost { background: var(--field); color: var(--ink); border: 1px solid var(--line); }
+  .big.ghost:hover { border-color: var(--accent); }
+  .big:active { transform: translateY(1px); }
+  .msg { min-height: 20px; font-size: 13.5px; color: var(--ok); }
+  .note { font-size: 12px; color: var(--dim); }
+</style>
+</head>
+<body>
+  <h1 id="title"></h1>
+  <p id="intro"></p>
+  <div class="card">
+    <h2 id="exT"></h2>
+    <button class="big" id="exBtn"></button>
+  </div>
+  <div class="card">
+    <h2 id="imT"></h2>
+    <button class="big ghost" id="imBtn"></button>
+    <div class="note" id="imNote"></div>
+  </div>
+  <div class="msg" id="msg"></div>
+<script>
+  const code = (new URLSearchParams(location.search).get('lang') || 'en').slice(0, 2);
+  const RTL = code === 'ar';
+  const T = ({
+    ar: { title: 'النسخ الاحتياطي والاستعادة', intro: 'احفظ إعداداتك ومفضلتك وملاحظاتك وسجلّك في ملف واحد، واستعدها متى شئت. (كلمات المرور غير مشمولة لأنها محميّة بمفتاح جهازك).',
+      exT: 'حفظ نسخة احتياطية', exBtn: '⬇ حفظ ملف النسخة الاحتياطية', imT: 'استعادة من ملف', imBtn: '⬆ اختيار ملف واستعادة', imNote: 'ستُطبَّق الإعدادات فوراً. يُنصح بإعادة تشغيل المتصفح بعد الاستعادة.',
+      exOk: '✅ تم حفظ النسخة الاحتياطية', imOk: '✅ تمت الاستعادة بنجاح', bad: 'تعذّر: الملف ليس نسخة احتياطية صالحة', err: 'حدث خطأ:' },
+    en: { title: 'Backup & Restore', intro: 'Save your settings, bookmarks, notes and history to one file, and restore them anytime. (Passwords are not included — they are protected by your device key.)',
+      exT: 'Save a backup', exBtn: '⬇ Save backup file', imT: 'Restore from a file', imBtn: '⬆ Choose a file and restore', imNote: 'Settings apply immediately. Restarting the browser after restore is recommended.',
+      exOk: '✅ Backup saved', imOk: '✅ Restored successfully', bad: 'Failed: the file is not a valid backup', err: 'Error:' },
+    de: { title: 'Sichern & Wiederherstellen', intro: 'Speichere Einstellungen, Lesezeichen, Notizen und Verlauf in einer Datei und stelle sie jederzeit wieder her. (Passwörter sind nicht enthalten.)',
+      exT: 'Sicherung speichern', exBtn: '⬇ Sicherungsdatei speichern', imT: 'Aus Datei wiederherstellen', imBtn: '⬆ Datei wählen und wiederherstellen', imNote: 'Einstellungen gelten sofort. Neustart empfohlen.',
+      exOk: '✅ Sicherung gespeichert', imOk: '✅ Erfolgreich wiederhergestellt', bad: 'Fehler: keine gültige Sicherung', err: 'Fehler:' },
+    fr: { title: 'Sauvegarde & Restauration', intro: 'Enregistrez vos réglages, favoris, notes et historique dans un fichier, et restaurez-les à tout moment. (Les mots de passe ne sont pas inclus.)',
+      exT: 'Enregistrer une sauvegarde', exBtn: '⬇ Enregistrer le fichier', imT: 'Restaurer depuis un fichier', imBtn: '⬆ Choisir un fichier et restaurer', imNote: 'Réglages appliqués immédiatement. Redémarrage conseillé.',
+      exOk: '✅ Sauvegarde enregistrée', imOk: '✅ Restauration réussie', bad: 'Échec : fichier invalide', err: 'Erreur :' },
+    es: { title: 'Copia de seguridad', intro: 'Guarda tus ajustes, marcadores, notas e historial en un archivo y restáuralos cuando quieras. (Las contraseñas no se incluyen.)',
+      exT: 'Guardar copia', exBtn: '⬇ Guardar archivo', imT: 'Restaurar desde archivo', imBtn: '⬆ Elegir archivo y restaurar', imNote: 'Los ajustes se aplican de inmediato. Se recomienda reiniciar.',
+      exOk: '✅ Copia guardada', imOk: '✅ Restaurado correctamente', bad: 'Error: archivo no válido', err: 'Error:' },
+    it: { title: 'Backup e ripristino', intro: 'Salva impostazioni, preferiti, note e cronologia in un file e ripristinali quando vuoi. (Le password non sono incluse.)',
+      exT: 'Salva un backup', exBtn: '⬇ Salva file di backup', imT: 'Ripristina da un file', imBtn: '⬆ Scegli file e ripristina', imNote: 'Impostazioni applicate subito. Riavvio consigliato.',
+      exOk: '✅ Backup salvato', imOk: '✅ Ripristino riuscito', bad: 'Errore: file non valido', err: 'Errore:' },
+    tr: { title: 'Yedekle ve Geri Yükle', intro: 'Ayarlarını, yer imlerini, notlarını ve geçmişini tek dosyada sakla, istediğinde geri yükle. (Parolalar dahil değildir.)',
+      exT: 'Yedek kaydet', exBtn: '⬇ Yedek dosyasını kaydet', imT: 'Dosyadan geri yükle', imBtn: '⬆ Dosya seç ve geri yükle', imNote: 'Ayarlar hemen uygulanır. Yeniden başlatma önerilir.',
+      exOk: '✅ Yedek kaydedildi', imOk: '✅ Başarıyla geri yüklendi', bad: 'Hata: geçerli bir yedek değil', err: 'Hata:' }
+  })[code] || null;
+  const L = T || ({ title: 'Backup & Restore', intro: '', exT: 'Save a backup', exBtn: 'Save backup', imT: 'Restore', imBtn: 'Choose & restore', imNote: '', exOk: 'Saved', imOk: 'Restored', bad: 'Invalid backup', err: 'Error:' });
+  document.documentElement.dir = RTL ? 'rtl' : 'ltr';
+  const $ = (id) => document.getElementById(id);
+  $('title').textContent = L.title; $('intro').textContent = L.intro;
+  $('exT').textContent = L.exT; $('exBtn').textContent = L.exBtn;
+  $('imT').textContent = L.imT; $('imBtn').textContent = L.imBtn; $('imNote').textContent = L.imNote;
+  const msg = $('msg');
+  $('exBtn').onclick = async () => { msg.textContent = ''; const r = await window.mbBackup.export(); if (r.ok) msg.textContent = L.exOk; else if (r.error) msg.textContent = L.err + ' ' + r.error; };
+  $('imBtn').onclick = async () => {
+    msg.textContent = ''; const r = await window.mbBackup.import();
+    if (r.ok) msg.textContent = L.imOk;
+    else if (r.error === 'NOT_BACKUP' || r.error === 'BAD_FILE') msg.textContent = L.bad;
+    else if (r.error) msg.textContent = L.err + ' ' + r.error;
+  };
+</script>
+</body>
+</html>
