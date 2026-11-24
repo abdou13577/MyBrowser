@@ -74,7 +74,11 @@ function injectScript(lbl) {
       const outLen = Math.max(1, Math.floor(merged.length / ratio));
       const samples = new Int16Array(outLen);
       for (let i = 0; i < outLen; i++) {
-        const s = Math.max(-1, Math.min(1, merged[Math.floor(i * ratio)] || 0));
+        const start = Math.floor(i * ratio);
+        const end = Math.min(merged.length, Math.max(start + 1, Math.floor((i + 1) * ratio)));
+        let sum = 0;
+        for (let j = start; j < end; j++) sum += merged[j];
+        const s = Math.max(-1, Math.min(1, sum / (end - start)));
         samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
       }
       const buf = new ArrayBuffer(44 + samples.length * 2);
@@ -186,8 +190,15 @@ const PY_SCRIPT = `
 import sys, json
 from faster_whisper import WhisperModel
 wav_path = sys.argv[1]
-model = WhisperModel("base", device="cpu", compute_type="int8")
-segs, info = model.transcribe(wav_path, vad_filter=True, beam_size=3)
+model = None
+try:
+    model = WhisperModel("large-v3-turbo", device="cuda", compute_type="int8_float16")
+except Exception:
+    try:
+        model = WhisperModel("large-v3-turbo", device="cpu", compute_type="int8")
+    except Exception:
+        model = WhisperModel("base", device="cpu", compute_type="int8")
+segs, info = model.transcribe(wav_path, vad_filter=True, beam_size=5, condition_on_previous_text=False)
 text = " ".join(s.text.strip() for s in segs if s.text).strip()
 sys.stdout.buffer.write(json.dumps({"ok": True, "text": text, "lang": info.language}, ensure_ascii=False).encode("utf-8"))
 `;
