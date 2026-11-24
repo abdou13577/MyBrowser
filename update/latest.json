@@ -1,17 +1,17 @@
 {
-  "version": "3.3.1",
-  "date": "2026-11-24T16:32:35.257Z",
+  "version": "3.3.2",
+  "date": "2026-11-24T16:54:09.304Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "438a06021f3f60b3f605ae0b691faec8b0269626",
+  "ref": "3f3bca7691c14eba9f7455f2279d7a4ef0e489e1",
   "notes": {
-    "ar": "الإصدار 3.3.1: إصلاح كامل لزر الميكروفون في المساعد الذكي — تسجيل صوتي حقيقي مستمر (يبقى يومض بالأحمر مع عدّاد زمني حتى تضغط إيقاف) وتحويل فوري للنص بأي لغة محلياً عبر Whisper بدقة عالية.",
-    "en": "Version 3.3.1: Complete fix for AI chat microphone — real continuous microphone recording with pulsing red indicator & timer until you stop, plus accurate local multi-language Whisper transcription."
+    "ar": "الإصدار 3.3.2: ترقية دقة الإملاء الصوتي للعربية وجميع اللغات إلى Whisper large-v3-turbo عبر كرت الشاشة (RTX 2080 Ti) مع تحسين تنقية الصوت المسجّل لدقة عالية جداً وسرعة فائقة.",
+    "en": "Version 3.3.2: Upgraded voice dictation accuracy for Arabic & all languages to Whisper large-v3-turbo on GPU with anti-aliased 16kHz audio filtering."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "fcab574c18a2aefaa11f5b7d308847acbed838330b641b59dbe7c7d56400cba3",
+      "sha256": "ad86b1562cad99889548b0f914ed69aadb0571458d701cda67e3c6474b880299",
       "size": 1334
     },
     {
@@ -171,8 +171,8 @@
     },
     {
       "path": "src/features/voicechat.js",
-      "sha256": "af6c457b51198bd9865d51188c26546278416f89149eaac08d9d07ef91177b66",
-      "size": 12127
+      "sha256": "243029fcd25972e60af2867b8328ddeb567e3cc7c2552195832c06d3e91a4b9f",
+      "size": 12611
     },
     {
       "path": "src/features/workspaces.js",
