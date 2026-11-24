@@ -34,7 +34,7 @@ module.exports = (ctx) => {
   try { require('./pipfix')(ctx); } catch (e) { ctx.logLine('pipfix failed', e); }
   try { require('./apps')(ctx); } catch (e) { ctx.logLine('apps failed', e); }
   try { require('./chooser')(ctx); } catch (e) { ctx.logLine('chooser failed', e); }
-  try { require('./adstudio')(ctx); } catch (e) { ctx.logLine('adstudio failed', e); }
+  try { require('./extras')(ctx); } catch (e) { ctx.logLine('extras failed', e); }
   try { require('./find')(ctx); } catch (e) { ctx.logLine('find failed', e); }
   try { require('./recent')(ctx); } catch (e) { ctx.logLine('recent failed', e); }
   try { require('./history')(ctx); } catch (e) { ctx.logLine('history failed', e); }
