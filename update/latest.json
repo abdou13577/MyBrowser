@@ -1,17 +1,17 @@
 {
-  "version": "3.2.0",
-  "date": "2026-11-24T15:48:07.572Z",
+  "version": "3.2.1",
+  "date": "2026-11-24T16:09:33.525Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "b8a26e43c65d1c09653857d171b03bf8ffa3b996",
+  "ref": "e94d4c210cf76dce7409757dd625f0f299d666d5",
   "notes": {
-    "ar": "الإصدار 3.2.0: ربط المساعد الذكي في MyBrowser مباشرةً مع FreeLLMAPI المحلي (تشغيل تلقائي في الخلفية وتوجيه مجاني لجميع ميزات الذكاء الاصطناعي داخل المتصفح).",
-    "en": "Version 3.2.0: Direct integration of MyBrowser's AI assistant with local FreeLLMAPI (auto-launch in background and automatic routing for all built-in AI features)."
+    "ar": "الإصدار 3.2.1: تشغيل المساعد الذكي تلقائياً وفوراً بدون الحاجة لأي مفتاح (يدعم FreeLLMAPI المحلي + Ollama المحلي تلقائياً، مع استمرار دعم مفتاح Claude إن وُجد).",
+    "en": "Version 3.2.1: Instant zero-setup AI assistant (automatically supports local FreeLLMAPI + local Ollama with no API key required, plus Claude key support)."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "d09af41a92702b7838a1aafb67c5eb89cd7682ed3cbd2b7868e7218e2ce3e8c8",
+      "sha256": "1dab811e684a4414ef23022d1d04b85b67fcd42b79e94b74373a3cdd4f00192c",
       "size": 1334
     },
     {
@@ -111,8 +111,8 @@
     },
     {
       "path": "src/features/freellm.js",
-      "sha256": "f7ca010a5323e2ee876e8098b86b861dc83b87ab45c52059e3cae80c7d477ffd",
-      "size": 9448
+      "sha256": "12d95a94ef749032882b55e03672bf66e441958b6da1daabc2342df4a70c2280",
+      "size": 11360
     },
     {
       "path": "src/features/history.js",
