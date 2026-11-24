@@ -136,5 +136,7 @@ contextBridge.exposeInMainWorld('mbExtras', {
   clipClose: () => ipcRenderer.invoke('clip:close'),
   clipClear: () => ipcRenderer.invoke('clip:clear'),
   clipPick: (i) => ipcRenderer.invoke('clip:pick', i),
-  transcribeVoice: (b64) => ipcRenderer.invoke('voice:transcribe', b64)
+  transcribeVoice: (b64) => ipcRenderer.invoke('voice:transcribe', b64),
+  omniSuggest: (q) => ipcRenderer.invoke('omni:suggest', q),
+  omniState: (open) => ipcRenderer.invoke('omni:state', open)
 });
