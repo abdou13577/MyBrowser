@@ -1,17 +1,17 @@
 {
-  "version": "3.4.0",
-  "date": "2026-11-24T17:23:08.942Z",
+  "version": "3.4.1",
+  "date": "2026-11-24T17:35:45.940Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "e6da3f2b46e1d0f82742944185445ceff86cfc3f",
+  "ref": "f5952194c807304a9fd62cfa0b4f731b9c395baf",
   "notes": {
-    "ar": "الإصدار 3.4.0: تفعيل البحث الفوري الحقيقي ومقارنة الأسعار عبر المتاجر (🛒 مقارنة الأسعار / Monitora prezzi) لأي منتج — سيارات، ملابس، إلكترونيات وغيرها — مع جدول مقارنة وروابط مباشرة لـ idealo وGoogle Shopping وAmazon وeBay وZalando وKleinanzeigen وAutoScout24.",
-    "en": "Version 3.4.0: Real-time live web price comparison (🛒 Compare Prices) for any product — cars, fashion, electronics, and more — with live multi-store search results and direct clickable links (idealo, Google Shopping, Amazon, eBay, Zalando, Kleinanzeigen, AutoScout24)."
+    "ar": "الإصدار 3.4.1: إصلاح الوضع الداكن لمنع انقلاب ألوان الصور والفيديوهات (خاصة على مواقع السيارات والمتاجر التي تستخدم وسوم picture وملء الشاشة) فتظهر الصور والفيديوهات بألوانها الطبيعية دائماً.",
+    "en": "Version 3.4.1: Fixed Dark Mode inverted colors on photos & videos (eliminates double-inversion inside <picture>, [role=\"img\"], background-image containers, and fullscreen video)."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "d39e5077d5db4cc3725ef7bb1fcbddbbb74be04273b1e150dc2687152e277f61",
+      "sha256": "635b10723b98c1ede4a3bc5238e47531b056ae1b7084614f91a0ec3cac30fbdc",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "3613b89a3804fe26fb7d25d5ffa23d0fdc140cac85addfcc13e73d7d94e300c3",
-      "size": 6046
+      "sha256": "6ceefb8c2049da28f4f0c68daa2cca55601c15f944675ffc155d7928f6cfe70c",
+      "size": 6131
     },
     {
       "path": "src/features/apps.js",
@@ -83,6 +83,11 @@
       "path": "src/features/cookiekiller.js",
       "sha256": "0f84a3e111c61b002e73dd511be45dd34a722d305f479f2a14e9e50a2bd62d90",
       "size": 2609
+    },
+    {
+      "path": "src/features/darkfix.js",
+      "sha256": "b4e3e01ed8a231954a2a916ec66edbdd8df847c7c2716a4288b44086624f94bb",
+      "size": 1141
     },
     {
       "path": "src/features/downloads.js",
