@@ -54,6 +54,7 @@ module.exports = (ctx) => {
   try { require('./cmdpalette')(ctx); } catch (e) { ctx.logLine('cmdpalette failed', e); }
   try { require('./clipvault')(ctx); } catch (e) { ctx.logLine('clipvault failed', e); }
   try { require('./focusguard')(ctx); } catch (e) { ctx.logLine('focusguard failed', e); }
+  try { require('./freellm')(ctx); } catch (e) { ctx.logLine('freellm failed', e); }
   let icon = null, icoReady = '';
   const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
   const apply = (w) => {
