@@ -377,4 +377,114 @@ module.exports = (ctx) => {
     });
   });
   function ensureRunningSafe(w) { ensureFreeRunning().then(() => { if (w) ctx.createTab(w, baseUrl()); }); }
+
+  // ---------- ترقية مقارنة الأسعار (shop:compare) بالبحث الفوري الحقيقي لجميع المنتجات والسيارات والملابس ----------
+  const SHOP_DETECT = `(() => {
+    const out = { name: '', price: '', currency: '', brand: '' };
+    try {
+      for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
+        let j; try { j = JSON.parse(s.textContent); } catch { continue; }
+        const items = [].concat(j['@graph'] || j);
+        for (const it of items) {
+          const type = [].concat((it && it['@type']) || []).join(',');
+          if (/Product|Car|Vehicle/i.test(type)) {
+            const off = [].concat(it.offers || [])[0] || {};
+            out.name = it.name || out.name;
+            out.price = String(off.price || off.lowPrice || out.price || '');
+            out.currency = off.priceCurrency || out.currency;
+            out.brand = (it.brand && (it.brand.name || it.brand)) || out.brand;
+            if (out.name) return out;
+          }
+        }
+      }
+    } catch {}
+    const pEl = document.querySelector('meta[property="product:price:amount"], meta[property="og:price:amount"], [itemprop="price"], #corePrice_feature_div .a-offscreen, .a-price .a-offscreen, .price, [class*="price"]');
+    out.name = (document.querySelector('meta[property="og:title"]')?.content || document.querySelector('h1')?.innerText || document.title || '').trim();
+    out.price = pEl ? (pEl.getAttribute('content') || pEl.innerText || '').trim().slice(0, 32) : '';
+    return out;
+  })()`;
+
+  async function bingRss(query, max = 5) {
+    try {
+      const r = await fetch('https://www.bing.com/search?format=rss&q=' + encodeURIComponent(query), {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36' },
+        signal: AbortSignal.timeout(4500)
+      });
+      if (!r.ok) return [];
+      const xml = await r.text();
+      const re = /<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<description>([\s\S]*?)<\/description>[\s\S]*?<\/item>/gi;
+      const unesc = (s) => String(s || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/<[^>]+>/g, '').trim();
+      const out = [];
+      let m;
+      while ((m = re.exec(xml)) && out.length < max) {
+        const u = unesc(m[2]);
+        if (/^https?:\/\//i.test(u)) out.push({ title: unesc(m[1]).slice(0, 110), url: u, desc: unesc(m[3]).slice(0, 170) });
+      }
+      return out;
+    } catch { return []; }
+  }
+
+  try { ipcMain.removeHandler('shop:compare'); } catch {}
+  ipcMain.handle('shop:compare', async (e) => {
+    const w = ctx.W(e), wc = ctx.activeWc(w);
+    if (!wc) return { ok: false, error: ctx.t('shopNoProduct') };
+    if (wc.isLoading()) await new Promise(r => { const tm = setTimeout(r, 5000); wc.once('did-stop-loading', () => { clearTimeout(tm); setTimeout(r, 250); }); });
+    try {
+      const d = await wc.executeJavaScript(SHOP_DETECT).catch(() => ({}));
+      const rawName = (d && d.name ? d.name : wc.getTitle() || '').replace(/\s*[|–—-]\s*[^|–—-]+$/, '').trim();
+      const name = rawName.slice(0, 90) || 'Product';
+      const curUrl = wc.getURL();
+      let curHost = '';
+      try { curHost = new URL(curUrl).hostname.replace(/^www\./, ''); } catch {}
+
+      const queryCore = [d && d.brand, name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+      const isCar = /(auto|car|bmw|mercedes|audi|volkswagen|vw|golf|polo|passat|opel|ford|toyota|skoda|seat|unfall|km|ps|tüv|baujahr|kleinanzeigen\.de\/s-anzeige|autoscout24|mobile\.de)/i.test(queryCore + ' ' + curUrl);
+      const isFashion = /(kleid|hose|jacke|schuh|slipper|sneaker|pullover|mantel|hemd|shirt|dress|shoe|jacket|jeans|coat|boot|mode|fashion|abito|scarpe|giacca|veste|chaussure|فستان|حذاء|معطف|جاكيت|بنطلون|ملابس)/i.test(queryCore + ' ' + curUrl);
+      const enc = encodeURIComponent(queryCore);
+
+      // 1) روابط مقارنة مباشرة حقيقية حسب نوع المنتج (سيارة / ملابس / أي منتج)
+      const directStores = isCar ? [
+        { title: `Kleinanzeigen: ${queryCore}`, url: `https://www.kleinanzeigen.de/s-autos/sortierung:preis/${encodeURIComponent(queryCore.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''))}/k0c216`, desc: 'Direct Kleinanzeigen car listings sorted by lowest price' },
+        { title: `AutoScout24: ${queryCore}`, url: `https://www.autoscout24.de/lst?atype=C&cy=D&sort=price&desc=0&q=${enc}`, desc: 'Direct AutoScout24 listings sorted by lowest price' }
+      ] : [
+        { title: `idealo (مقارنة الأسعار): ${queryCore}`, url: `https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=${enc}`, desc: 'Price comparison across hundreds of European stores' },
+        { title: `Google Shopping: ${queryCore}`, url: `https://www.google.com/search?tbm=shop&q=${enc}`, desc: 'Live Google Shopping prices & similar items' },
+        { title: `Amazon: ${queryCore}`, url: `https://www.amazon.de/s?k=${enc}`, desc: 'Amazon listings & prices' },
+        { title: `eBay: ${queryCore}`, url: `https://www.ebay.de/sch/i.html?_nkw=${enc}&_sop=15`, desc: 'eBay listings sorted by lowest price' },
+        ...(isFashion ? [{ title: `Zalando: ${queryCore}`, url: `https://www.zalando.de/katalog/?q=${enc}`, desc: 'Similar fashion items on Zalando' }] : [])
+      ];
+
+      // 2) بحث حي متوازي على الويب لإيجاد متاجر وأسعار فعلية لمنتجات مماثلة أو مطابقة
+      const [r1, r2] = await Promise.all([
+        bingRss(`${queryCore} price OR preis OR €`, 5),
+        bingRss(isCar ? `kleinanzeigen.de OR autoscout24.de ${queryCore}` : `${queryCore} idealo OR amazon OR ebay OR zalando OR otto`, 5)
+      ]);
+      const seen = new Set([curUrl]);
+      const liveResults = [];
+      for (const item of [...r1, ...r2]) {
+        if (seen.has(item.url)) continue;
+        if (curHost && item.url.includes(curHost)) continue;
+        seen.add(item.url);
+        liveResults.push(item);
+        if (liveResults.length >= 6) break;
+      }
+
+      const combined = [...liveResults, ...directStores];
+      const block = combined.map((x, i) => `${i + 1}. [${x.title}](${x.url}) — ${x.desc}`).join('\n');
+      const sys = ctx.system() +
+        ' You HAVE live real-time web search results attached below. NEVER say you cannot search the internet or do not have real-time access! ' +
+        'ALWAYS output a clean Markdown comparison table (Store | Similar/Matching Item & Price | Link) using ONLY the exact verified clickable links [Title](URL) from the attached results, followed by a brief 1-sentence verdict on whether the current price is a good deal.';
+
+      const prompt =
+        `Current product: "${name}"${d && d.brand ? ' (Brand: ' + d.brand + ')' : ''}${d && d.price ? `, Current price: ${d.price} ${d.currency || ''}` : ''}\n` +
+        `Current page: ${curUrl}\n\n` +
+        `[LIVE MULTI-STORE SEARCH RESULTS & VERIFIED COMPARISON LINKS]:\n${block}\n\n` +
+        `Compare this product with similar/matching listings from other platforms above. Highlight any cheaper options or prices mentioned in the snippets, include the clickable links so the user can open them directly, and give a 1-sentence deal verdict.`;
+
+      const text = sanitizeLinks(await unifiedAsk(sys, [{ role: 'user', content: prompt }], 2500));
+      return { ok: true, text, label: `🛒 ${ctx.t('shopCompare')}: ${name.slice(0, 60)}` };
+    } catch (err) {
+      return { ok: false, error: err.message === 'NO_KEY' ? 'NO_KEY' : err.message };
+    }
+  });
 };
