@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#090A16; --panel:#121530; --field:#191d3d; --line:#272c55; --ink:#eef0ff; --dim:#9aa0d0; --accent:#8B7CFF; --ok:#3ecf8e; --bad:#ff7a90; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: "Segoe UI","Noto Sans Arabic",system-ui,sans-serif; }
+  body { display: flex; flex-direction: column; }
+  header { padding: 20px 26px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h1 { margin: 0; font-size: 21px; font-weight: 800; }
+  .btn { height: 38px; padding: 0 16px; border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 10px; cursor: pointer; font-size: 13.5px; }
+  .btn:hover { border-color: var(--accent); }
+  main { flex: 1; overflow: auto; padding: 14px 18px 40px; }
+  .item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; background: var(--panel); }
+  .ic { width: 40px; height: 40px; flex: none; border-radius: 10px; background: var(--field); display: grid; place-items: center; font-size: 20px; }
+  .meta { flex: 1; min-width: 0; }
+  .name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .bar { height: 5px; border-radius: 3px; background: var(--field); overflow: hidden; margin-top: 7px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #4dd0e1); width: 0%; transition: width .2s; }
+  .act { display: flex; gap: 6px; flex: none; }
+  .act button { height: 32px; min-width: 32px; padding: 0 10px; border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 8px; cursor: pointer; font-size: 12.5px; }
+  .act button:hover { border-color: var(--accent); }
+  .state-done .ic { color: var(--ok); } .state-error .ic, .state-canceled .ic { color: var(--bad); }
+  .empty { text-align: center; color: var(--dim); margin-top: 90px; font-size: 15px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1 id="title"></h1>
+    <button class="btn" id="clear"></button>
+  </header>
+  <main id="list"></main>
+<script>
+  const code = (new URLSearchParams(location.search).get('lang') || 'en').slice(0, 2);
+  const RTL = code === 'ar';
+  const T = ({
+    ar: { title: 'التنزيلات', clear: 'مسح المنتهية', empty: 'لا توجد تنزيلات', open: 'فتح', show: 'إظهار في المجلد', cancel: 'إلغاء', remove: 'إزالة', done: 'اكتمل', canceled: 'أُلغي', error: 'فشل', running: 'جارٍ التنزيل' },
+    en: { title: 'Downloads', clear: 'Clear finished', empty: 'No downloads', open: 'Open', show: 'Show in folder', cancel: 'Cancel', remove: 'Remove', done: 'Completed', canceled: 'Canceled', error: 'Failed', running: 'Downloading' },
+    de: { title: 'Downloads', clear: 'Fertige löschen', empty: 'Keine Downloads', open: 'Öffnen', show: 'Im Ordner zeigen', cancel: 'Abbrechen', remove: 'Entfernen', done: 'Abgeschlossen', canceled: 'Abgebrochen', error: 'Fehlgeschlagen', running: 'Lädt herunter' },
+    fr: { title: 'Téléchargements', clear: 'Effacer terminés', empty: 'Aucun téléchargement', open: 'Ouvrir', show: 'Afficher', cancel: 'Annuler', remove: 'Retirer', done: 'Terminé', canceled: 'Annulé', error: 'Échec', running: 'Téléchargement' },
+    es: { title: 'Descargas', clear: 'Borrar terminadas', empty: 'Sin descargas', open: 'Abrir', show: 'Mostrar', cancel: 'Cancelar', remove: 'Quitar', done: 'Completado', canceled: 'Cancelado', error: 'Fallido', running: 'Descargando' },
+    it: { title: 'Download', clear: 'Cancella completati', empty: 'Nessun download', open: 'Apri', show: 'Mostra', cancel: 'Annulla', remove: 'Rimuovi', done: 'Completato', canceled: 'Annullato', error: 'Non riuscito', running: 'Download' },
+    tr: { title: 'İndirilenler', clear: 'Bitenleri temizle', empty: 'İndirme yok', open: 'Aç', show: 'Klasörde göster', cancel: 'İptal', remove: 'Kaldır', done: 'Tamamlandı', canceled: 'İptal edildi', error: 'Başarısız', running: 'İndiriliyor' }
+  })[code] || null;
+  const L = T || ({ title: 'Downloads', clear: 'Clear finished', empty: 'No downloads', open: 'Open', show: 'Show in folder', cancel: 'Cancel', remove: 'Remove', done: 'Completed', canceled: 'Canceled', error: 'Failed', running: 'Downloading' });
+  document.documentElement.dir = RTL ? 'rtl' : 'ltr';
+  document.getElementById('title').textContent = L.title;
+  document.getElementById('clear').textContent = L.clear;
+  const list = document.getElementById('list');
+  const fmtBytes = (n) => { if (!n) return '—'; const u = ['B','KB','MB','GB']; let i = 0; while (n >= 1024 && i < 3) { n /= 1024; i++; } return n.toFixed(i ? 1 : 0) + ' ' + u[i]; };
+  const icon = (st) => st === 'done' ? '📄' : st === 'error' ? '⚠' : st === 'canceled' ? '✕' : '⬇';
+  let data = [];
+  function render() {
+    list.innerHTML = '';
+    if (!data.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = L.empty; list.append(e); return; }
+    for (const d of data) {
+      const row = document.createElement('div'); row.className = 'item state-' + d.state;
+      const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = icon(d.state);
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const name = document.createElement('div'); name.className = 'name'; name.textContent = d.name; name.title = d.name;
+      const sub = document.createElement('div'); sub.className = 'sub';
+      const pct = d.total ? Math.min(100, Math.round(d.got / d.total * 100)) : 0;
+      if (d.state === 'running') sub.textContent = `${L.running} · ${fmtBytes(d.got)}${d.total ? ' / ' + fmtBytes(d.total) : ''}`;
+      else if (d.state === 'done') sub.textContent = `${L.done} · ${fmtBytes(d.total || d.got)}`;
+      else sub.textContent = d.state === 'canceled' ? L.canceled : L.error;
+      meta.append(name, sub);
+      if (d.state === 'running') { const bar = document.createElement('div'); bar.className = 'bar'; const i = document.createElement('i'); i.style.width = pct + '%'; bar.append(i); meta.append(bar); }
+      const act = document.createElement('div'); act.className = 'act';
+      if (d.state === 'running') { const c = mk(L.cancel); c.onclick = () => window.mbDl.cancel(d.id); act.append(c); }
+      else {
+        if (d.state === 'done') { const o = mk(L.open); o.onclick = () => window.mbDl.open(d.path); const s = mk(L.show); s.onclick = () => window.mbDl.show(d.path); act.append(o, s); }
+        const r = mk('✕'); r.title = L.remove; r.onclick = async () => { await window.mbDl.remove(d.id); data = data.filter(x => x.id !== d.id); render(); }; act.append(r);
+      }
+      row.append(ic, meta, act); list.append(row);
+    }
+  }
+  const mk = (txt) => { const b = document.createElement('button'); b.textContent = txt; return b; };
+  async function refresh() { data = await window.mbDl.list(); render(); }
+  window.mbDl.onUpdate((d) => { const i = data.findIndex(x => x.id === d.id); if (i >= 0) data[i] = d; else data.unshift(d); render(); });
+  document.getElementById('clear').onclick = async () => { await window.mbDl.clear(); refresh(); };
+  refresh();
+</script>
+</body>
+</html>
