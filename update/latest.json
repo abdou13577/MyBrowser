@@ -1,17 +1,17 @@
 {
-  "version": "3.7.0",
-  "date": "2026-11-26T21:33:44.627Z",
+  "version": "3.7.1",
+  "date": "2026-11-26T21:45:23.979Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "2d33f450f5270f308b81b0ac6e6b5b978620d147",
+  "ref": "588b917ec496a22aafc1761e5a32db0a2d9256c9",
   "notes": {
-    "ar": "الإصدار 3.7.0: تفعيل نافذة المشاركة الأصلية لويندوز 10/11 (Native Windows Share Sheet) — عند الضغط على زر «مشاركة» في أي موقع أو زر المشاركة في شريط المتصفح (Ctrl+Shift+U) تفتح نافذة ويندوز الأصلية بجميع التطبيقات المثبتة على جهازك وهاتفك (واتساب، تيليجرام، Phone Link، البريد، إلخ).",
-    "en": "Version 3.7.0: Real Native Windows 10/11 Share Sheet integration — clicking any website's Share button (document_start navigator.share) or the toolbar Share button (Ctrl+Shift+U) opens the native Windows Share dialog with your installed apps & Phone Link."
+    "ar": "الإصدار 3.7.1: إصلاح نافذة المشاركة الأصلية لويندوز 10/11 (استخدام نافذة مضيفة مملوكة للعملية لحل خطأ WinRT HWND) — الآن تنبثق نافذة «Link teilen / مشاركة» الأصلية لويندوز فوراً عند الضغط على زر المشاركة في أي موقع أو في الشريط العلوي.",
+    "en": "Version 3.7.1: Fixed Native Windows 10/11 Share Sheet (owned Win32 host HWND for WinRT DataTransferManager) — now opens the native Windows Share dialog cleanly from any website Share button or toolbar."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "810371d27ac3f4ad585f4466becdc6ef0c7c0dae4dda211a7252ba2df7d27ceb",
+      "sha256": "86a7a3dab11ba000fc88083e75223f11e597dd01a44fe33ae9ba417763b414dc",
       "size": 1334
     },
     {
@@ -201,8 +201,8 @@
     },
     {
       "path": "src/features/winshare.ps1",
-      "sha256": "fa2c3c5652136ff74ec26a4e5dce2eea5ce2a7731104600534e267b2bda23a90",
-      "size": 3434
+      "sha256": "0e57ec4ccec903d0cf5fcb72ffcc244d03a57370d8cab139be2aa9068420960d",
+      "size": 3790
     },
     {
       "path": "src/features/workspaces.js",
