@@ -8,8 +8,8 @@ const fs = require('fs');
 const path = require('path');
 
 const CHECK_MS = 30 * 1000;          // فحص خفيف كل 30 ثانية
-const FAST_IDLE_MS = 5 * 60 * 1000;  // 5 دقائق عند وجود أكثر من 3 تبويبات
-const NORM_IDLE_MS = 10 * 60 * 1000; // 10 دقائق في الوضع العادي
+const FAST_IDLE_MS = 4 * 60 * 1000;  // 4 دقائق عند وجود أكثر من 3 تبويبات لتوفير أكبر للرام
+const NORM_IDLE_MS = 8 * 60 * 1000;  // 8 دقائق في الوضع العادي
 const CACHE_CLEAN_MS = 6 * 60 * 60 * 1000; // تنظيف الكاش كل 6 ساعات
 
 module.exports = (ctx) => {

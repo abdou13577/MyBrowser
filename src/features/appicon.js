@@ -32,6 +32,8 @@ function toIco(pngs) {
 
 module.exports = (ctx) => {
   try { require('./darkfix')(ctx); } catch (e) { ctx.logLine('darkfix failed', e); }
+  try { require('./fbfix')(ctx); } catch (e) { ctx.logLine('fbfix failed', e); }
+  try { require('./guestfix')(ctx); } catch (e) { ctx.logLine('guestfix failed', e); }
   try { require('./pipfix')(ctx); } catch (e) { ctx.logLine('pipfix failed', e); }
   try { require('./apps')(ctx); } catch (e) { ctx.logLine('apps failed', e); }
   try { require('./chooser')(ctx); } catch (e) { ctx.logLine('chooser failed', e); }

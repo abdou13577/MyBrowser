@@ -29,8 +29,8 @@ const UNLOCK_SCROLL = `(() => {
   } catch {}
 })()`;
 
-// مواقع لا نتدخل في لافتاتها (تسجيل دخول/بنوك/جوجل نفسها)
-const SKIP = /(^|\.)(accounts\.google\.com|paypal\.com|stripe\.com|bank|sparkasse|ing\.de|dkb\.de|n26\.com)$/i;
+// مواقع لا نتدخل في لافتاتها (تسجيل دخول/بنوك/تطبيقات ويب ثقيلة مثل فيسبوك ويوتيوب)
+const SKIP = /(^|\.)(accounts\.google\.com|google\.com|youtube\.com|facebook\.com|instagram\.com|tiktok\.com|whatsapp\.com|paypal\.com|stripe\.com|bank|sparkasse|ing\.de|dkb\.de|n26\.com)$/i;
 
 module.exports = (ctx) => {
   ctx.hooks.navigated.push((_w, _id, wc, url) => {

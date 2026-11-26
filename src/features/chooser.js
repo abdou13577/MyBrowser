@@ -50,7 +50,7 @@ module.exports = (ctx) => {
     try { if (w && w.win && !w.win.isDestroyed()) { if (w.win.isMinimized()) w.win.restore(); w.win.show(); w.win.focus(); } } catch {}
     resolve(id); closeChooser(); return true;
   });
-  ipcMain.handle('chooser:guest', () => { picked = true; ctx.createWindow(null, { guest: true }); resolve(null); closeChooser(); return true; });
+  ipcMain.handle('chooser:guest', () => { picked = true; if (ctx.openGuestWindow) ctx.openGuestWindow(); else ctx.createWindow('__guest__', { guest: true }); resolve(null); closeChooser(); return true; });
   ipcMain.handle('chooser:add', () => {
     picked = true;
     const w = ctx.openProfileWindow(ctx.settings.activeProfile);
