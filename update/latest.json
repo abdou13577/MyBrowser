@@ -1,17 +1,17 @@
 {
-  "version": "3.7.1",
-  "date": "2026-11-26T21:45:23.979Z",
+  "version": "3.7.2",
+  "date": "2026-11-26T21:57:18.144Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "588b917ec496a22aafc1761e5a32db0a2d9256c9",
+  "ref": "bb7b014497406e0e756027703f57b93b6d489d82",
   "notes": {
-    "ar": "الإصدار 3.7.1: إصلاح نافذة المشاركة الأصلية لويندوز 10/11 (استخدام نافذة مضيفة مملوكة للعملية لحل خطأ WinRT HWND) — الآن تنبثق نافذة «Link teilen / مشاركة» الأصلية لويندوز فوراً عند الضغط على زر المشاركة في أي موقع أو في الشريط العلوي.",
-    "en": "Version 3.7.1: Fixed Native Windows 10/11 Share Sheet (owned Win32 host HWND for WinRT DataTransferManager) — now opens the native Windows Share dialog cleanly from any website Share button or toolbar."
+    "ar": "الإصدار 3.7.2: ترقية نافذة المشاركة الأصلية لويندوز 10/11 إلى تطبيق GUI أصيل فائق السرعة (winshare.exe بحجم 8KB) يحصل على التركيز الأمامي تلقائياً من المتصفح فتنبثق نافذة «Link teilen / مشاركة» الأصلية فوراً بدون أي تأخير.",
+    "en": "Version 3.7.2: Upgraded Native Windows 10/11 Share Sheet to an instant 8KB native GUI helper (winshare.exe) that receives foreground focus automatically from MyBrowser so the Windows Share dialog opens immediately."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "86a7a3dab11ba000fc88083e75223f11e597dd01a44fe33ae9ba417763b414dc",
+      "sha256": "af9939d4a9e5edbc55a6c33716dc1d752eafca0a1d2a64cc3e2c9f381688cf41",
       "size": 1334
     },
     {
@@ -196,13 +196,13 @@
     },
     {
       "path": "src/features/webshare.js",
-      "sha256": "b8be193282bfc6718e85a7d86ca103b2b71d2051a6c001a41425bfe55e76d6f8",
-      "size": 4254
+      "sha256": "a2c7ed0d24ed8bd68f893cfb51bed004ade1c636de92461826c7706939b37035",
+      "size": 5312
     },
     {
-      "path": "src/features/winshare.ps1",
-      "sha256": "0e57ec4ccec903d0cf5fcb72ffcc244d03a57370d8cab139be2aa9068420960d",
-      "size": 3790
+      "path": "src/features/winshare.cs",
+      "sha256": "04ebb51811a9d105f9042962bc3c0c63317295452bf2357b460eaee903ec854f",
+      "size": 3413
     },
     {
       "path": "src/features/workspaces.js",
