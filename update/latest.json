@@ -1,17 +1,17 @@
 {
-  "version": "3.6.2",
-  "date": "2026-11-26T21:18:17.584Z",
+  "version": "3.7.0",
+  "date": "2026-11-26T21:33:44.627Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "7dfec82928b7fec81114441f36618732b9241304",
+  "ref": "2d33f450f5270f308b81b0ac6e6b5b978620d147",
   "notes": {
-    "ar": "الإصدار 3.6.2: تفعيل زر المشاركة القياسي للمواقع (Web Share API) — عند الضغط على زر «مشاركة» في أي موقع، تفتح نافذة مشاركة أنيقة وسريعة تدعم واتساب، تيليجرام، فيسبوك، إكس، لينكدإن، البريد، ونسخ الرابط بنقرة واحدة.",
-    "en": "Version 3.6.2: Added Web Share API (navigator.share) support — clicking a website's Share button now opens a sleek Share Sheet for WhatsApp, Telegram, Facebook, X, LinkedIn, Email, and one-click Copy Link."
+    "ar": "الإصدار 3.7.0: تفعيل نافذة المشاركة الأصلية لويندوز 10/11 (Native Windows Share Sheet) — عند الضغط على زر «مشاركة» في أي موقع أو زر المشاركة في شريط المتصفح (Ctrl+Shift+U) تفتح نافذة ويندوز الأصلية بجميع التطبيقات المثبتة على جهازك وهاتفك (واتساب، تيليجرام، Phone Link، البريد، إلخ).",
+    "en": "Version 3.7.0: Real Native Windows 10/11 Share Sheet integration — clicking any website's Share button (document_start navigator.share) or the toolbar Share button (Ctrl+Shift+U) opens the native Windows Share dialog with your installed apps & Phone Link."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "90b5199d8ea036341bb7f007fcf7b734560468c5ce2252449da297a13773da5f",
+      "sha256": "810371d27ac3f4ad585f4466becdc6ef0c7c0dae4dda211a7252ba2df7d27ceb",
       "size": 1334
     },
     {
@@ -96,8 +96,8 @@
     },
     {
       "path": "src/features/extras.js",
-      "sha256": "01b904d3ee81fadde5a8efbcf46f9ff520b175e5d2b3e4caa664d56bc29d13a6",
-      "size": 15619
+      "sha256": "4c84e6fbc0039e4a7582620f56adb58b5f02b374818e2bfc55e890d905061665",
+      "size": 16124
     },
     {
       "path": "src/features/fbfix.js",
@@ -196,8 +196,13 @@
     },
     {
       "path": "src/features/webshare.js",
-      "sha256": "aee0a3fec0dfcbced7f1f40579d85efabf1775b8b80f977d7ea7aaaf924c4e3b",
-      "size": 8611
+      "sha256": "b8be193282bfc6718e85a7d86ca103b2b71d2051a6c001a41425bfe55e76d6f8",
+      "size": 4254
+    },
+    {
+      "path": "src/features/winshare.ps1",
+      "sha256": "fa2c3c5652136ff74ec26a4e5dce2eea5ce2a7731104600534e267b2bda23a90",
+      "size": 3434
     },
     {
       "path": "src/features/workspaces.js",
@@ -211,8 +216,8 @@
     },
     {
       "path": "src/preload.js",
-      "sha256": "9a838086bc895c854b57c094d9218ae696dd3ad05aba9e099686461477d8f2ea",
-      "size": 7124
+      "sha256": "9563ae99e414224625a55c467c79c6bf6faa307ed2a85c65449c1e9f1896c932",
+      "size": 7183
     },
     {
       "path": "src/ui/backup.html",
@@ -273,6 +278,11 @@
       "path": "src/ui/workspaces.html",
       "sha256": "1a6853247fc421b963038e61bf4aba1fee85e230f4cc9a9347aab7bc288048a7",
       "size": 11727
+    },
+    {
+      "path": "src/webshare-preload.js",
+      "sha256": "1af71339134521c8e6266b42fcadb1478192e037b98d65b77a28b78c164a8a6a",
+      "size": 2544
     }
   ]
 }
