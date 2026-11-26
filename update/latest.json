@@ -1,17 +1,17 @@
 {
-  "version": "3.6.0",
-  "date": "2026-11-26T19:57:24.423Z",
+  "version": "3.6.1",
+  "date": "2026-11-26T20:04:00.044Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "d64ba1995886a2de43a1879466f69b539f4b5f33",
+  "ref": "189aa6db416e3302b6d599191ee0238405bf88e9",
   "notes": {
-    "ar": "الإصدار 3.6.0: إصلاح كامل لوضع التصفح الخفي / نافذة الضيف (عزل حقيقي 100% بدون أي حساب + شارة 🕶️ تصفح خفي + اختصار Ctrl+Shift+N)، إصلاح مشكلة عدم تحميل صور فيسبوك عند العودة من Reels للصفحة الرئيسية، وتسريع كبير وخفض استهلاك المعالج والرام في فيسبوك وإنستغرام.",
-    "en": "Version 3.6.0: Fixed Incognito/Guest mode true isolation (clean zero-cookie session + 🕶️ Incognito badge + Ctrl+Shift+N), fixed Facebook Reels-to-Home broken images, and major CPU/RAM responsiveness optimization on Facebook & Instagram."
+    "ar": "الإصدار 3.6.1: إصلاح نهائي لوضع التصفح الخفي — منع استبدال أيقونة 🕶️ واسم «تصفح خفي» ببيانات حسابك العادي بعد 3 ثوانٍ، والحفاظ على جلسة معزولة نظيفة 100% مع تفعيل حجب الإعلانات بداخلها.",
+    "en": "Version 3.6.1: Final fix for Incognito/Guest window — stops profile updates from overwriting the 🕶️ Incognito identity with your main account and preserves full ad-blocking on the clean ephemeral session."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "fe3ee0e00cff8851bae502c3052cbf0da5501a7e2b0a005d4556d1e9db364973",
+      "sha256": "d173b452af771d2a8e6d5d277ae276703d70baed9e744080d7a7c9b1762587a0",
       "size": 1334
     },
     {
@@ -126,8 +126,8 @@
     },
     {
       "path": "src/features/guestfix.js",
-      "sha256": "8cbad78d692641e3901e862c653d5e992f85fd30e73db26220ec4203707a8df3",
-      "size": 5022
+      "sha256": "62e6292e67ef4961ef2da562a57d8d48cc9048cb4d083e5559035bcebaf75405",
+      "size": 5184
     },
     {
       "path": "src/features/history.js",
