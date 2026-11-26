@@ -138,5 +138,6 @@ contextBridge.exposeInMainWorld('mbExtras', {
   clipPick: (i) => ipcRenderer.invoke('clip:pick', i),
   transcribeVoice: (b64) => ipcRenderer.invoke('voice:transcribe', b64),
   omniSuggest: (q) => ipcRenderer.invoke('omni:suggest', q),
-  omniState: (open) => ipcRenderer.invoke('omni:state', open)
+  omniState: (open) => ipcRenderer.invoke('omni:state', open),
+  sharePage: () => ipcRenderer.invoke('webshare:current')
 });
