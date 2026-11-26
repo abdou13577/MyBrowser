@@ -1,17 +1,17 @@
 {
-  "version": "3.5.1",
-  "date": "2026-11-24T17:54:25.724Z",
+  "version": "3.6.0",
+  "date": "2026-11-26T19:57:24.423Z",
   "minElectron": "45.4.1",
   "minBase": "2.6.7",
-  "ref": "b27c12aff61b732cb604ed4c082f4a0cfc3314ef",
+  "ref": "d64ba1995886a2de43a1879466f69b539f4b5f33",
   "notes": {
-    "ar": "الإصدار 3.5.1: تحسين ذاكرة المحادثة في المساعد الذكي — أصبح يتبع سياق الدردشة بالكامل من البداية، وعندما تطلب منه البحث عن «نفس هذه السيارة» أو «أحضر لي روابط لها» يستخرج الموديل والمواصفات تلقائياً من الرسائل السابقة ويجلب لك روابط البحث المباشرة لها.",
-    "en": "Version 3.5.1: Improved AI chat memory & follow-up search — keeps full multi-turn conversation context (16 turns) and automatically resolves references like \"search for this same car\" from earlier messages to generate exact live search links."
+    "ar": "الإصدار 3.6.0: إصلاح كامل لوضع التصفح الخفي / نافذة الضيف (عزل حقيقي 100% بدون أي حساب + شارة 🕶️ تصفح خفي + اختصار Ctrl+Shift+N)، إصلاح مشكلة عدم تحميل صور فيسبوك عند العودة من Reels للصفحة الرئيسية، وتسريع كبير وخفض استهلاك المعالج والرام في فيسبوك وإنستغرام.",
+    "en": "Version 3.6.0: Fixed Incognito/Guest mode true isolation (clean zero-cookie session + 🕶️ Incognito badge + Ctrl+Shift+N), fixed Facebook Reels-to-Home broken images, and major CPU/RAM responsiveness optimization on Facebook & Instagram."
   },
   "files": [
     {
       "path": "package.json",
-      "sha256": "6d0ee915f22c31c4c8ba11ab585065f98242b32d1e81212554f1521cde1bd0cb",
+      "sha256": "fe3ee0e00cff8851bae502c3052cbf0da5501a7e2b0a005d4556d1e9db364973",
       "size": 1334
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "src/features/appicon.js",
-      "sha256": "703f8907cc7fdcac672ab8889ceece5f12cfc3fe9c1edf1e25f3a988da05534e",
-      "size": 6216
+      "sha256": "f6cf8cc4ae7085dbef3cf59f7e04fd19671904bc018ad6d52615bb7c27953d61",
+      "size": 6384
     },
     {
       "path": "src/features/apps.js",
@@ -61,8 +61,8 @@
     },
     {
       "path": "src/features/chooser.js",
-      "sha256": "3987e50ce73121f3cfd6675f2f751324019bf420b089a6d521deda4668d24924",
-      "size": 4126
+      "sha256": "6f5f705454b55c393535721f01760d479c8668bfc2a51d118ed88c6de88ff82b",
+      "size": 4186
     },
     {
       "path": "src/features/cleanlink.js",
@@ -81,8 +81,8 @@
     },
     {
       "path": "src/features/cookiekiller.js",
-      "sha256": "0f84a3e111c61b002e73dd511be45dd34a722d305f479f2a14e9e50a2bd62d90",
-      "size": 2609
+      "sha256": "05eda72caaddb9728d21cfb2df8f45787afb82631f461497764c87cb1037c110",
+      "size": 2737
     },
     {
       "path": "src/features/darkfix.js",
@@ -98,6 +98,11 @@
       "path": "src/features/extras.js",
       "sha256": "01b904d3ee81fadde5a8efbcf46f9ff520b175e5d2b3e4caa664d56bc29d13a6",
       "size": 15619
+    },
+    {
+      "path": "src/features/fbfix.js",
+      "sha256": "de0a8722ecb7600a787b276f7e776b402511c2d0ae4ee952aed9fa3023f4d639",
+      "size": 6155
     },
     {
       "path": "src/features/fblogin.js",
@@ -120,6 +125,11 @@
       "size": 30166
     },
     {
+      "path": "src/features/guestfix.js",
+      "sha256": "8cbad78d692641e3901e862c653d5e992f85fd30e73db26220ec4203707a8df3",
+      "size": 5022
+    },
+    {
       "path": "src/features/history.js",
       "sha256": "7f34a7aa1ab98f7f25f7004aafc1c634e00ee9e5321060082619a7f9a847454e",
       "size": 5685
@@ -136,8 +146,8 @@
     },
     {
       "path": "src/features/perfguard.js",
-      "sha256": "540308a13b52aab5f643d31132f4a8d76fbeaa7e82fc677407a77a12f707e91f",
-      "size": 4934
+      "sha256": "c0c03f1584889b3da09f2bb336acda59fbdb3b88973c5eff2e226970341ac71c",
+      "size": 4966
     },
     {
       "path": "src/features/pipfix.js",
