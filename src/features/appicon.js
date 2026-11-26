@@ -60,6 +60,7 @@ module.exports = (ctx) => {
   try { require('./freellm')(ctx); } catch (e) { ctx.logLine('freellm failed', e); }
   try { require('./voicechat')(ctx); } catch (e) { ctx.logLine('voicechat failed', e); }
   try { require('./omnibox')(ctx); } catch (e) { ctx.logLine('omnibox failed', e); }
+  try { require('./webshare')(ctx); } catch (e) { ctx.logLine('webshare failed', e); }
   let icon = null, icoReady = '';
   const icoPath = path.join(path.dirname(process.execPath), 'icon.ico');
   const apply = (w) => {
