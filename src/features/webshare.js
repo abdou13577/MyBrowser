@@ -1,40 +1,67 @@
 // نافذة المشاركة الأصلية لويندوز 10/11 (Native Windows Share Sheet) + دعم كامل لـ navigator.share في كل المواقع
+// - يبني برنامج winshare.exe صغير (8 KB) مرة واحدة عبر csc.exe المدمج في ويندوز لسرعة فورية (40ms) بدون وميض طرفية
 // - يسجّل src/webshare-preload.js على جميع الجلسات ليعمل navigator.share من لحظة تحميل الصفحة (document_start)
-// - عند ضغط زر «مشاركة» في أي موقع (أو زر المشاركة في شريط المتصفح / Ctrl+Shift+U) يفتح نافذة المشاركة الأصلية لويندوز
-//   والتي تعرض التطبيقات المثبتة لديك (WhatsApp، Telegram، ربط الهاتف Phone Link، البريد، إلخ)
+// - عند ضغط زر «مشاركة» في أي موقع (أو زر المشاركة في الشريط / Ctrl+Shift+U) تفتح نافذة ويندوز الأصلية بجميع التطبيقات المثبتة
 const { app, ipcMain, session } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const cp = require('child_process');
 
 const PRELOAD_PATH = path.join(__dirname, '..', 'webshare-preload.js');
-const PS_SCRIPT = path.join(__dirname, 'winshare.ps1');
+const CS_SRC = path.join(__dirname, 'winshare.cs');
+const CSC = 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe';
 
-function hwndOf(w) {
-  try {
-    if (!w || !w.win || w.win.isDestroyed()) return '0';
-    const buf = w.win.getNativeWindowHandle();
-    if (!buf || buf.length < 4) return '0';
-    if (buf.length >= 8 && typeof buf.readBigUInt64LE === 'function') return buf.readBigUInt64LE(0).toString();
-    return String(buf.readUInt32LE(0));
-  } catch { return '0'; }
+function exePath() {
+  return path.join(app.getPath('userData'), 'winshare.exe');
 }
 
-function showWindowsShareSheet(w, { title, text, url }) {
-  if (process.platform !== 'win32') return false;
+function ensureExe(logLine) {
+  if (process.platform !== 'win32') return '';
+  const out = exePath();
   try {
-    const hwnd = hwndOf(w);
-    const args = [
-      '-NoProfile', '-STA', '-WindowStyle', 'Hidden', '-ExecutionPolicy', 'Bypass',
-      '-File', PS_SCRIPT,
-      '-Hwnd', hwnd,
-      '-Title', String(title || 'MyBrowser').slice(0, 200),
-      '-Text', String(text || '').slice(0, 600),
-      '-Url', String(url || '').slice(0, 2000)
-    ];
-    const child = cp.spawn('powershell.exe', args, { detached: true, stdio: 'ignore', windowsHide: true });
+    if (fs.existsSync(out) && fs.existsSync(CS_SRC)) {
+      if (fs.statSync(out).mtimeMs >= fs.statSync(CS_SRC).mtimeMs) return out;
+    }
+  } catch {}
+  if (!fs.existsSync(CSC) || !fs.existsSync(CS_SRC)) return '';
+  try {
+    const fw = 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319';
+    const wm = 'C:\\Windows\\System32\\WinMetadata';
+    const r = cp.spawnSync(CSC, [
+      '/nologo', '/target:winexe', `/out:${out}`,
+      '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll',
+      `/r:${fw}\\System.Runtime.dll`,
+      `/r:${fw}\\System.Runtime.WindowsRuntime.dll`,
+      `/r:${fw}\\System.Runtime.InteropServices.WindowsRuntime.dll`,
+      `/r:${wm}\\Windows.ApplicationModel.winmd`,
+      `/r:${wm}\\Windows.Foundation.winmd`,
+      CS_SRC
+    ], { windowsHide: true, encoding: 'utf8' });
+    if (r.status === 0 && fs.existsSync(out)) return out;
+    if (logLine) logLine('WEBSHARE compile failed', r.status, (r.stdout || r.stderr || '').slice(0, 200));
+  } catch (e) {
+    if (logLine) logLine('WEBSHARE compile err', e.message);
+  }
+  return '';
+}
+
+function showWindowsShareSheet(logLine, { title, text, url }) {
+  if (process.platform !== 'win32') return false;
+  const exe = ensureExe(logLine);
+  if (!exe) return false;
+  try {
+    // بدون windowsHide حتى يمنح ويندوز التركيز الأمامي تلقائياً لنافذة winshare.exe GUI فتظهر نافذة المشاركة فوراً
+    const child = cp.spawn(exe, [
+      String(title || 'MyBrowser').slice(0, 200),
+      String(text || '').slice(0, 600),
+      String(url || '').slice(0, 2000)
+    ], { detached: true, stdio: 'ignore' });
     child.unref();
     return true;
-  } catch { return false; }
+  } catch (e) {
+    if (logLine) logLine('WEBSHARE spawn err', e.message);
+    return false;
+  }
 }
 
 module.exports = (ctx) => {
@@ -47,9 +74,10 @@ module.exports = (ctx) => {
     } catch {}
   };
 
-  // تسجيل على الجلسة الافتراضية وكل جلسات الحسابات والضيوف الجديدة
   app.on('session-created', (ses) => attachSession(ses));
   app.whenReady().then(() => {
+    // بناء winshare.exe مرة واحدة بهدوء عند بدء المتصفح ليكون جاهزاً فورياً عند أول ضغطة
+    setTimeout(() => { try { ensureExe(ctx.logLine); } catch {} }, 2500);
     attachSession(session.defaultSession);
     for (const p of (ctx.settings.profiles || [])) {
       try {
@@ -70,21 +98,14 @@ module.exports = (ctx) => {
     if (!/^https?:\/\//i.test(url)) return { ok: false };
     const title = wc.getTitle() || url;
     const clean = ctx.cleanUrl ? ctx.cleanUrl(url).url : url;
-    const ok = showWindowsShareSheet(w, { title, text: title, url: clean });
-    return { ok };
+    return { ok: showWindowsShareSheet(ctx.logLine, { title, text: title, url: clean }) };
   }
 
   ctx.shareCurrentPage = shareCurrent;
 
-  ipcMain.handle('webshare:open', (e, data) => {
-    const w = ctx.W(e);
-    const ok = showWindowsShareSheet(w, data || {});
-    return { ok };
-  });
-
+  ipcMain.handle('webshare:open', (_e, data) => ({ ok: showWindowsShareSheet(ctx.logLine, data || {}) }));
   ipcMain.handle('webshare:current', (e) => shareCurrent(ctx.W(e)));
 
-  // اختصار Ctrl+Shift+U لمشاركة الصفحة الحالية عبر نافذة ويندوز في أي وقت
   const ownerOf = (wc) => {
     for (const w of ctx.windows) { try { if (w.ui && w.ui.webContents === wc) return w; } catch {} }
     const id = ctx.idByWc(wc.id);
