@@ -1,57 +1,76 @@
 // إصلاح وضع التصفح الخفي / نافذة الضيف (True Incognito / Guest Mode) + اختصار Ctrl+Shift+N
-// - يضمن جلسة معزولة 100% في الذاكرة (بدون أي كوكيز أو تسجيلات دخول من حساباتك الأخرى)
-// - يمنع ظهور صورة أو اسم أو بريد حسابك العادي داخل نافذة التصفح الخفي
-// - يضيف شارة واضحة «🕶️ تصفح خفي» وتلويناً خاصاً لتمييز النافذة فوراً
+// - يضمن جلسة معزولة 100% في الذاكرة (بدون أي كوكيز أو تسجيلات دخول من حساباتك الأخرى) مع بقاء حجب الإعلانات مفعّلاً
+// - يمنع renderer.js نهائياً من استبدال أيقونة 🕶️ واسم «تصفح خفي» ببيانات حسابك العادي عند تحديث قائمة الحسابات
 const { app, ipcMain, session } = require('electron');
 
 const L = {
-  ar: { badge: 'تصفح خفي', title: 'وضع التصفح الخفي — لا يُحفظ سجل أو كوكيز', tip: 'فتح نافذة تصفح خفي (Ctrl+Shift+N)' },
-  en: { badge: 'Incognito', title: 'Incognito Mode — no history or cookies saved', tip: 'New Incognito window (Ctrl+Shift+N)' },
-  de: { badge: 'Inkognito', title: 'Inkognito-Modus — kein Verlauf, keine Cookies', tip: 'Neues Inkognito-Fenster (Ctrl+Shift+N)' },
-  fr: { badge: 'Privé', title: 'Navigation privée — aucun historique ni cookie', tip: 'Nouvelle fenêtre privée (Ctrl+Shift+N)' },
-  es: { badge: 'Incógnito', title: 'Modo incógnito — sin historial ni cookies', tip: 'Nueva ventana incógnito (Ctrl+Shift+N)' },
-  it: { badge: 'Incognito', title: 'Modalità incognito — nessuna cronologia o cookie', tip: 'Nuova finestra incognito (Ctrl+Shift+N)' },
-  tr: { badge: 'Gizli', title: 'Gizli Mod — geçmiş ve çerez kaydedilmez', tip: 'Yeni gizli pencere (Ctrl+Shift+N)' }
+  ar: { badge: 'تصفح خفي', title: 'وضع التصفح الخفي — جلسة فارغة بدون حسابات أو سجل أو كوكيز' },
+  en: { badge: 'Incognito', title: 'Incognito Mode — clean session, no accounts, history, or cookies' },
+  de: { badge: 'Inkognito', title: 'Inkognito-Modus — leere Sitzung, kein Konto, kein Verlauf' },
+  fr: { badge: 'Privé', title: 'Navigation privée — session vierge, aucun compte ni historique' },
+  es: { badge: 'Incógnito', title: 'Modo incógnito — sesión limpia sin cuentas ni historial' },
+  it: { badge: 'Incognito', title: 'Modalità incognito — sessione pulita senza account né cronologia' },
+  tr: { badge: 'Gizli', title: 'Gizli Mod — temiz oturum, hesap ve geçmiş kaydedilmez' }
 };
 
 function guestUiScript(lbl) {
   return `(() => {
     const T = ${JSON.stringify(lbl)};
     document.documentElement.style.setProperty('--mbx', '#64748b');
-    const av = document.getElementById('avatar');
-    if (av) { av.innerHTML = '🕶️'; av.style.background = '#334155'; av.style.color = '#fff'; }
-    const pb = document.getElementById('profileBtn');
-    if (pb) {
-      pb.title = T.title;
-      if (!document.getElementById('mbxGuestBadge')) {
-        const b = document.createElement('span');
-        b.id = 'mbxGuestBadge';
-        b.textContent = '🕶️ ' + T.badge;
-        b.title = T.title;
-        b.style.cssText = 'display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:999px;background:rgba(148,163,184,.18);border:1px solid rgba(148,163,184,.42);color:#E2E8F0;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;';
-        pb.parentNode.insertBefore(b, pb);
+
+    const paint = () => {
+      const av = document.getElementById('avatar');
+      if (av && av.textContent !== '🕶️') {
+        av.innerHTML = '🕶️';
+        av.style.background = '#334155';
+        av.style.color = '#fff';
       }
+      const pb = document.getElementById('profileBtn');
+      if (pb) {
+        pb.title = T.title;
+        if (!document.getElementById('mbxGuestBadge')) {
+          const b = document.createElement('span');
+          b.id = 'mbxGuestBadge';
+          b.textContent = '🕶️ ' + T.badge;
+          b.title = T.title;
+          b.style.cssText = 'display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:999px;background:rgba(148,163,184,.2);border:1px solid rgba(148,163,184,.48);color:#F1F5F9;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;';
+          pb.parentNode.insertBefore(b, pb);
+        }
+      }
+      const pmName = document.getElementById('pmName');
+      const pmEmail = document.getElementById('pmEmail');
+      const pmAv = document.getElementById('pmAvatar');
+      if (pmName && pmName.textContent !== T.badge) pmName.textContent = T.badge;
+      if (pmEmail && pmEmail.textContent !== T.title) pmEmail.textContent = T.title;
+      if (pmAv && pmAv.textContent !== '🕶️') { pmAv.innerHTML = '🕶️'; pmAv.style.background = '#334155'; }
+      for (const id of ['pmSignin', 'pmAccountsWrap', 'pmSignout', 'pmRemove', 'pmLock']) {
+        const el = document.getElementById(id);
+        if (el) el.hidden = true;
+      }
+    };
+
+    paint();
+    if (!window.__mbGuestObs) {
+      window.__mbGuestObs = true;
+      const obs = new MutationObserver(() => paint());
+      const av = document.getElementById('avatar');
+      const pm = document.getElementById('profileMenu');
+      if (av) obs.observe(av, { childList: true, subtree: true, characterData: true });
+      if (pm) obs.observe(pm, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden'] });
     }
-    const pmName = document.getElementById('pmName');
-    const pmEmail = document.getElementById('pmEmail');
-    const pmAv = document.getElementById('pmAvatar');
-    if (pmName) pmName.textContent = T.badge;
-    if (pmEmail) pmEmail.textContent = T.title;
-    if (pmAv) { pmAv.innerHTML = '🕶️'; pmAv.style.background = '#334155'; }
   })()`;
 }
 
 module.exports = (ctx) => {
   const lbl = () => L[(ctx.lang() || 'en').slice(0, 2)] || L.en;
-  let seq = 0;
 
   async function openCleanGuest() {
+    // نترك createWindow يضبط w.partition ('guest-' + Date.now()) ويفعّل عليه setupSession + مانع الإعلانات
     const w = ctx.createWindow('__guest__', { guest: true });
     if (!w) return;
     w.guest = true;
     w.profileId = '__guest__';
-    w.partition = 'guest-' + Date.now() + '-' + (++seq);
-    // مسح فوري لأي بيانات في الجلسة المؤقتة لضمان بداية نظيفة 100%
+    // مسح فوري لأي بيانات في الجلسة المؤقتة لضمان بداية نظيفة 100% بدون أي حساب
     try {
       const ses = session.fromPartition(w.partition);
       await ses.clearStorageData().catch(() => {});
@@ -62,25 +81,15 @@ module.exports = (ctx) => {
 
   ctx.openGuestWindow = openCleanGuest;
 
-  // استبدال مستمع profiles:guest القديم حتى لا يورّث معرّف الحساب النشط
   ipcMain.removeAllListeners('profiles:guest');
   ipcMain.on('profiles:guest', () => { openCleanGuest(); });
 
-  // عند جاهزية نافذة الضيف: نخفي هوية الحساب العادي ونضع شارة التصفح الخفي الواضحة
   ctx.hooks.windowReady.push((w) => {
     if (!w || !w.guest || !w.ui || w.ui.webContents.isDestroyed()) return;
     w.profileId = '__guest__';
-    const apply = () => {
-      try {
-        if (w.ui && !w.ui.webContents.isDestroyed()) {
-          w.ui.webContents.executeJavaScript(guestUiScript(lbl())).catch(() => {});
-        }
-      } catch {}
-    };
-    apply();
-    // نعيد التطبيق بعد وصول رسالة profiles الأولية من main.js حتى لا تستبدل أيقونة 🕶️ بصورة الحساب
-    setTimeout(apply, 250);
-    setTimeout(apply, 900);
+    try {
+      w.ui.webContents.executeJavaScript(guestUiScript(lbl())).catch(() => {});
+    } catch {}
   });
 
   // اختصار Ctrl+Shift+N لفتح نافذة تصفح خفي جديدة في أي وقت
