@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$Hwnd = "0",
   [string]$Title = "MyBrowser",
   [string]$Text = "",
@@ -15,7 +15,6 @@ using System;
 using System.Runtime.InteropServices;
 
 public static class WinShareInterop {
-  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   [DllImport("combase.dll", PreserveSig = false)]
   private static extern void RoGetActivationFactory([MarshalAs(UnmanagedType.HString)] string classId, [In] ref Guid iid, out IntPtr factory);
 
@@ -45,47 +44,56 @@ public static class WinShareInterop {
 }
 "@
 
-$targetHwnd = [IntPtr]::Zero
-try {
-  $val = [Int64]::Parse($Hwnd)
-  if ($val -ne 0) { $targetHwnd = New-Object IntPtr($val) }
-} catch {}
-if ($targetHwnd -eq [IntPtr]::Zero) { $targetHwnd = [WinShareInterop]::GetForegroundWindow() }
+# نافذة مضيفة مخفية مملوكة لنفس العملية لأن Windows WinRT يرفض HWND مملوكاً لعملية أخرى
+$form = New-Object System.Windows.Forms.Form
+$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
+$form.ShowInTaskbar = $false
+$form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+$form.Size = New-Object System.Drawing.Size(1, 1)
+$form.Opacity = 0.01
+$form.TopMost = $true
 
-$interop = $null
-$dtm = [WinShareInterop]::GetManager($targetHwnd, [ref]$interop)
-$script:handled = $false
 $shareTitle = if ([string]::IsNullOrWhiteSpace($Title)) { "MyBrowser" } else { $Title }
 $shareText = $Text
 $shareUrl = $Url
+$script:interop = $null
+$script:dtm = $null
 
-$eventAction = {
-  param($sender, $args)
+$form.Add_Shown({
   try {
-    $req = $args.Request
-    $dp = $req.Data
-    $dp.Properties.Title = $shareTitle
-    if (-not [string]::IsNullOrWhiteSpace($shareText)) {
-      $dp.Properties.Description = $shareText
-      $dp.SetText($shareText)
-    } elseif (-not [string]::IsNullOrWhiteSpace($shareUrl)) {
-      $dp.Properties.Description = $shareUrl
-      $dp.SetText($shareUrl)
-    }
-    if ($shareUrl -match '^https?://') {
-      $dp.SetWebLink([Uri]$shareUrl)
-    }
-  } catch {}
-  $script:handled = $true
-}
+    $h = $form.Handle
+    $interopLocal = $null
+    $dtmLocal = [WinShareInterop]::GetManager($h, [ref]$interopLocal)
+    $script:interop = $interopLocal
+    $script:dtm = $dtmLocal
+    $dtmLocal.add_DataRequested({
+      param($sender, $args)
+      try {
+        $dp = $args.Request.Data
+        $dp.Properties.Title = $shareTitle
+        if (-not [string]::IsNullOrWhiteSpace($shareText)) {
+          $dp.Properties.Description = $shareText
+          $dp.SetText($shareText)
+        } elseif (-not [string]::IsNullOrWhiteSpace($shareUrl)) {
+          $dp.Properties.Description = $shareUrl
+          $dp.SetText($shareUrl)
+        }
+        if ($shareUrl -match '^https?://') {
+          $dp.SetWebLink([Uri]$shareUrl)
+        }
+      } catch {}
+    }) | Out-Null
+    [WinShareInterop]::ShowUI($interopLocal, $h)
+  } catch {
+    Write-Error $_
+    $form.Close()
+  }
+})
 
-$token = $dtm.add_DataRequested($eventAction)
-[WinShareInterop]::ShowUI($interop, $targetHwnd)
+# إغلاق تلقائي هادئ بعد 30 ثانية حتى لا تبقى أي عملية في الخلفية
+$timer = New-Object System.Windows.Forms.Timer
+$timer.Interval = 30000
+$timer.Add_Tick({ $timer.Stop(); $form.Close() })
+$timer.Start()
 
-$sw = [System.Diagnostics.Stopwatch]::StartNew()
-while ($sw.Elapsed.TotalSeconds -lt 25) {
-  [System.Windows.Forms.Application]::DoEvents()
-  Start-Sleep -Milliseconds 40
-  if ($script:handled -and $sw.Elapsed.TotalSeconds -gt 2.5) { break }
-}
-try { $dtm.remove_DataRequested($token) } catch {}
+[System.Windows.Forms.Application]::Run($form)
